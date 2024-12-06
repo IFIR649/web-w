@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Libros - Lingus</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/Nunito.css">
+    <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <nav class="navbar align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 navbar-dark">
+            <div class="container-fluid d-flex flex-column p-0">
+                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-school"></i></div>
+                    <div class="sidebar-brand-text mx-3"><span>Lingus</span></div>
+                </a>
+                <hr class="sidebar-divider my-0">
+                <ul class="navbar-nav text-light" id="accordionSidebar">
+                    <li class="nav-item"><a class="nav-link" href="students.html"><i class="fas fa-user-graduate"></i><span>Alumnos</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="teachers.html"><i class="fas fa-chalkboard-teacher"></i><span>Maestros</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="groups.html"><i class="fas fa-users"></i><span>Grupos</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="payments.html"><i class="fas fa-wallet"></i><span>Pagos</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="languages.html"><i class="fas fa-language"></i><span>Idiomas</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="levels.html"><i class="fas fa-layer-group"></i><span>Niveles</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" href="books.html"><i class="fas fa-book"></i><span>Libros</span></a></li>
+                </ul>
+                <div class="text-center d-none d-md-inline">
+                    <button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button>
+                </div>
+            </div>
+        </nav>
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <nav class="navbar navbar-expand bg-white shadow mb-4 topbar">
+                    <div class="container-fluid">
+                        <button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="navbar-nav flex-nowrap ms-auto">
+                            <li class="nav-item dropdown no-arrow">
+                                <div class="nav-item dropdown no-arrow">
+                                    <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><span class="d-none d-lg-inline me-2 text-gray-600 small">Admin</span><img class="border rounded-circle img-profile" src="assets/img/admin-avatar.jpeg"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
+                                        <a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Perfil</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="logout.html"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Cerrar sesión</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="container-fluid">
+                    <h3 class="text-dark mb-4">Libros</h3>
+                    <div class="card shadow">
+                        <div class="card-header py-3">
+                            <p class="text-primary m-0 fw-bold">Lista de Libros</p>
+                            <a class="btn btn-success btn-sm mt-2" href="add-book.html"><i class="fas fa-plus"></i> Agregar Libro</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nombre</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>001</td>
+                                            <td>English for Beginners</td>
+                                            <td>
+                                                <a class="btn btn-sm btn-info" href="#">Ver</a>
+                                                <a class="btn btn-sm btn-warning" href="#">Editar</a>
+                                                <a class="btn btn-sm btn-danger" href="#">Eliminar</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>002</td>
+                                            <td>Intermediate English</td>
+                                            <td>
+                                                <a class="btn btn-sm btn-info" href="#">Ver</a>
+                                                <a class="btn btn-sm btn-warning" href="#">Editar</a>
+                                                <a class="btn btn-sm btn-danger" href="#">Eliminar</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>003</td>
+                                            <td>Advanced English</td>
+                                            <td>
+                                                <a class="btn btn-sm btn-info" href="#">Ver</a>
+                                                <a class="btn btn-sm btn-warning" href="#">Editar</a>
+                                                <a class="btn btn-sm btn-danger" href="#">Eliminar</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="text-center my-auto copyright"><span>Copyright © Lingus 2024</span></div>
+                </div>
+            </footer>
+        </div>
+        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/theme.js"></script>
+</body>
+
+</html>
