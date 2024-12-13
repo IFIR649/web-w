@@ -101,9 +101,15 @@
                         <td>${student.email}</td>
                         <td>${student.status}</td>
                         <td>
-                            <a href="crud/students/view-student.html?id=${student.id}" class="btn btn-sm btn-info">Ver</a>
-                            <a href="crud/students/edit-student.html?id=${student.id}" class="btn btn-sm btn-warning">Editar</a>
-                            <button class="btn btn-sm btn-danger" onclick="deleteStudent('${student.id}')">Eliminar</button>
+                            <a href="assets/crud/students/view-student.html?id=${student.id}" class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i> Ver
+                            </a>
+                            <a href="assets/crud/students/edit-student.html?id=${student.id}" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <button class="btn btn-sm btn-danger" onclick="deleteStudent('${student.id}')">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                            </button>
                         </td>
                     </tr>
                 `;
@@ -114,9 +120,7 @@
         function deleteStudent(id) {
             const confirmDelete = confirm(`¿Seguro que deseas eliminar al estudiante con matrícula ${id}?`);
             if (confirmDelete) {
-                // Aquí se puede agregar una llamada al backend para eliminar el estudiante
                 alert(`Estudiante con matrícula ${id} eliminado.`);
-                // Simulación: Eliminar estudiante de la lista
                 const index = students.findIndex(student => student.id === id);
                 if (index !== -1) {
                     students.splice(index, 1);
@@ -131,3 +135,4 @@
 </body>
 
 </html>
+
