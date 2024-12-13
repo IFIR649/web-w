@@ -4,10 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Agregar Estudiante - Lingus</title>
+    <title>Agregar Alumno - Lingus</title>
     <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../css/Nunito.css">
     <link rel="stylesheet" href="../../fonts/fontawesome-all.min.css">
+    
     <style>
         body {
             background-color: #f4f4f9;
@@ -82,6 +83,7 @@
 </head>
 
 <body>
+<<<<<<< HEAD
     <div class="form-container">
         <h3 class="form-title">Agregar Nuevo Estudiante</h3>
         <form id="addStudentForm" action="../../backend/add-student.php" method="POST">
@@ -89,6 +91,73 @@
             <div class="mb-4">
                 <label for="matricula" class="form-label required">Matrícula</label>
                 <input type="text" id="matricula" name="matricula" class="form-control" placeholder="Ejemplo: 001" required>
+=======
+    <div id="navbar-placeholder"></div>
+    <script>
+        $(function () {
+            $("#navbar-placeholder").load("../../navbar.html");
+        });
+    </script>
+
+    <div class="container mt-5">
+        <h3 class="text-primary mb-4">Agregar Nuevo Alumno</h3>
+        <div class="card shadow">
+            <div class="card-body">
+                <form id="addStudentForm" action="../../../php/procesar_alumno.php  " method="POST">
+                    <!-- Nombre Completo -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="nombre" class="form-label required">Nombre</label>
+                            <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Nombre del alumno" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="apellido_paterno" class="form-label required">Apellido Paterno</label>
+                            <input type="text" id="apellido_paterno" name="apellido_paterno" class="form-control" placeholder="Apellido paterno" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="apellido_materno" class="form-label">Apellido Materno</label>
+                            <input type="text" id="apellido_materno" name="apellido_materno" class="form-control" placeholder="Apellido materno">
+                        </div>
+                    </div>
+
+                    <!-- Correo Electrónico -->
+                    <div class="mb-3">
+                        <label for="correo" class="form-label">Correo Electrónico</label>
+                        <input type="email" id="correo" name="correo" class="form-control" placeholder="Correo del alumno">
+                    </div>
+
+                    <!-- Número Alumno -->
+                    <div class="mb-3">
+                        <label for="num_alumno" class="form-label required">Número de Alumno</label>
+                        <input type="text" id="num_alumno" name="num_alumno" class="form-control" placeholder="Número único del alumno" required>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="mb-3">
+                        <label for="estado" class="form-label required">Estado</label>
+                        <select id="estado" name="estado" class="form-select" required>
+                            <option value="activo">Activo</option>
+                            <option value="inactivo">Inactivo</option>
+                        </select>
+                    </div>
+
+                    <!-- Fecha de Inscripción -->
+                    <div class="mb-3">
+                        <label for="fecha_inscripcion" class="form-label required">Fecha de Inscripción</label>
+                        <input type="date" id="fecha_inscripcion" name="fecha_inscripcion" class="form-control" required>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
+                        <a href="" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+>>>>>>> ebd3fa3a878617fc48c76027f746e4d625af8b5f
             </div>
 
             <!-- Nombre Completo -->
