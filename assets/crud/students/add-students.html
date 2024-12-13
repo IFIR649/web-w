@@ -4,10 +4,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Agregar Estudiante - Lingus</title>
+    <title>Agregar Alumno - Lingus</title>
     <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../css/Nunito.css">
     <link rel="stylesheet" href="../../fonts/fontawesome-all.min.css">
+<<<<<<< HEAD
+    
+=======
+>>>>>>> c0f5e826eeae43cbf109af9100aa954042ec8776
     <style>
         .form-label.required::after {
             content: " *";
@@ -29,21 +33,15 @@
     </script>
 
     <div class="container mt-5">
-        <h3 class="text-primary mb-4">Agregar Nuevo Estudiante</h3>
+        <h3 class="text-primary mb-4">Agregar Nuevo Alumno</h3>
         <div class="card shadow">
             <div class="card-body">
-                <form id="addStudentForm" action="../../backend/add-student.php" method="POST">
-                    <!-- Matrícula -->
-                    <div class="mb-3">
-                        <label for="matricula" class="form-label required">Matrícula</label>
-                        <input type="text" id="matricula" name="matricula" class="form-control" placeholder="Ejemplo: 001" required>
-                    </div>
-
+                <form id="addStudentForm" action="../../../php/procesar_alumno.php  " method="POST">
                     <!-- Nombre Completo -->
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="nombre" class="form-label required">Nombre</label>
-                            <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Nombre del estudiante" required>
+                            <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Nombre del alumno" required>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="apellido_paterno" class="form-label required">Apellido Paterno</label>
@@ -58,7 +56,13 @@
                     <!-- Correo Electrónico -->
                     <div class="mb-3">
                         <label for="correo" class="form-label">Correo Electrónico</label>
-                        <input type="email" id="correo" name="correo" class="form-control" placeholder="Correo del estudiante">
+                        <input type="email" id="correo" name="correo" class="form-control" placeholder="Correo del alumno">
+                    </div>
+
+                    <!-- Número Alumno -->
+                    <div class="mb-3">
+                        <label for="num_alumno" class="form-label required">Número de Alumno</label>
+                        <input type="text" id="num_alumno" name="num_alumno" class="form-control" placeholder="Número único del alumno" required>
                     </div>
 
                     <!-- Estado -->
@@ -74,23 +78,6 @@
                     <div class="mb-3">
                         <label for="fecha_inscripcion" class="form-label required">Fecha de Inscripción</label>
                         <input type="date" id="fecha_inscripcion" name="fecha_inscripcion" class="form-control" required>
-                    </div>
-
-                    <!-- Idioma -->
-                    <div class="mb-3">
-                        <label for="idioma" class="form-label">Idioma</label>
-                        <select id="idioma" name="idioma" class="form-select">
-                            <option value="">Seleccione un idioma</option>
-                            <option value="1">Inglés</option>
-                            <option value="2">Francés</option>
-                            <option value="3">Alemán</option>
-                        </select>
-                    </div>
-
-                    <!-- Número Alumno -->
-                    <div class="mb-3">
-                        <label for="num_alumno" class="form-label required">Número de Alumno</label>
-                        <input type="text" id="num_alumno" name="num_alumno" class="form-control" placeholder="Número único del alumno" required>
                     </div>
 
                     <!-- Botones -->
