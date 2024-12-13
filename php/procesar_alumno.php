@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               VALUES ('$nombre', '$apellido_paterno', '$apellido_materno', '$correo', '$fecha_inscripcion', '$estado', '$num_alumno')";
 
     if ($conn->query($query) === TRUE) {
-        header("Location: http://localhost/lingus/web-w/students.html"); // Cambia esta página por la que prefieras
+        header("Location: http://localhost/lingus/web-w/students.php"); // Cambia esta página por la que prefieras
         exit(); // Asegura que el script se detenga después de la redirección
     } else {
         echo "Error al guardar los datos: " . $conn->error;
