@@ -4,9 +4,31 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Login - Brand</title>
+    <title>Login - Lingus</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/Nunito.css">
+    <style>
+        .bg-login-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f4f4;
+        }
+
+        .bg-login-image img {
+            width: 80%;
+            max-width: 200px;
+        }
+
+        .btn-show-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: gray;
+        }
+    </style>
 </head>
 
 <body class="bg-gradient-primary">
@@ -16,24 +38,29 @@
                 <div class="card shadow-lg o-hidden border-0 my-5">
                     <div class="card-body p-0">
                         <div class="row">
-                            <div class="col-lg-6 d-none d-lg-flex">
-                                <div class="flex-grow-1 bg-login-image" style="background-image: url(&quot;assets/img/dogs/image3.jpeg&quot;);"></div>
+                            <!-- Lado izquierdo con el logo -->
+                            <div class="col-lg-6 d-none d-lg-flex bg-login-image">
+                                <img src="assets/img/logo.png" alt="Lingus Logo">
                             </div>
+                            <!-- Lado derecho con el formulario -->
                             <div class="col-lg-6">
                                 <div class="p-5">
-                                    <div class="text-center">
-                                        <h4 class="text-dark mb-4">SISTEMAS LINGUS</h4>
-                                    </div>
-                                    <form class="user">
-                                        <div class="mb-3"><input class="form-control form-control-user" type="email" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Correo" name="email"></div>
-                                        <div class="mb-3"><input class="form-control form-control-user" type="password" id="exampleInputPassword" placeholder="contraseña" name="password"></div>
+                                    <form class="user" onsubmit="return handleLogin(event)">
                                         <div class="mb-3">
-                                            <div class="custom-checkbox small"></div>
-                                        </div><button class="btn btn-primary d-block btn-user w-100" type="submit">INGRESAR</button>
-                                        <hr>
+                                            <label for="username" class="form-label">Usuario</label>
+                                            <input class="form-control form-control-user" type="text" id="username" placeholder="Ingrese su usuario" name="username" required>
+                                        </div>
+                                        <div class="mb-3 position-relative">
+                                            <label for="password" class="form-label">Contraseña</label>
+                                            <input class="form-control form-control-user" type="password" id="password" placeholder="Ingrese su contraseña" name="password" required>
+                                            <span class="btn-show-password" onclick="togglePassword()">👁️</span>
+                                        </div>
+                                        <button class="btn btn-primary d-block btn-user w-100" type="submit">Ingresar</button>
                                         <hr>
                                     </form>
-                                    <div class="text-center"></div>
+                                    <div class="text-center mt-3">
+                                        <a class="small" href="#">¿Olvidaste tu contraseña?</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -43,7 +70,32 @@
         </div>
     </div>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/theme.js"></script>
+    <script>
+        // Usuario y contraseña predefinidos (puedes reemplazarlo más tarde con una lógica de backend)
+        const validUsername = "admin";
+        const validPassword = "password123";
+
+        // Mostrar/Ocultar contraseña
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            passwordField.type = passwordField.type === 'password' ? 'text' : 'password';
+        }
+
+        // Manejar el inicio de sesión
+        function handleLogin(event) {
+            event.preventDefault(); // Prevenir el envío del formulario
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (username === validUsername && password === validPassword) {
+                // Redirigir a la vista de students.html
+                window.location.href = "students.html";
+            } else {
+                // Mostrar un mensaje de error
+                alert("Usuario o contraseña incorrectos. Inténtalo nuevamente.");
+            }
+        }
+    </script>
 </body>
 
 </html>

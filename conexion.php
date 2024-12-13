@@ -1,3 +1,4 @@
+
 <?php
 // Configuración de la base de datos
 $host = "localhost"; // Servidor de la base de datos
@@ -10,7 +11,7 @@ $conn = new mysqli($host, $user, $password, $dbname);
 
 // Verificar conexión
 if ($conn->connect_error) {
-    die("Conexión fallidaaa: " . $conn->connect_error);
+    die("Conexión fallida: " . $conn->connect_error);
 }
 
 // Conexión exitosa
