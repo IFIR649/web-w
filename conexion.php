@@ -1,3 +1,4 @@
+
 <?php
 // Configuración de la base de datos
 $host = "localhost"; // Servidor de la base de datos
