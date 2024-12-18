@@ -13,7 +13,7 @@
 <body id="page-top">
     <div id="wrapper">
         <div id="navbar-placeholder"></div>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="assets/js/query.js"></script>
         <script>
             $(function () {
                 $("#navbar-placeholder").load("assets/navbar.html");
