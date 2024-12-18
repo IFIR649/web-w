@@ -1,5 +1,5 @@
 <?php
-include 'php/conexion.php'; // Cambia la ruta si "conexion.php" está en otra ubicación
+include 'php/conexion.php'; // Conexión a la base de datos
 
 // Manejar el estado solicitado
 $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
@@ -15,12 +15,12 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/Nunito.css">
     <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body id="page-top">
     <div id="wrapper">
         <div id="navbar-placeholder"></div>
-        <script src="assets/js/query.js"></script>
         <script>
             $(function () {
                 $("#navbar-placeholder").load("assets/navbar.html");
@@ -57,24 +57,20 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <p class="text-primary m-0 fw-bold">Lista de Estudiantes</p>
                             <div>
-                                <!-- Botón Filtrar Activos -->
-                                <a href="?estado=activo" 
-                                   class="btn btn-info btn-sm <?php echo $estado_filtro === 'activo' ? 'disabled' : ''; ?>">
-                                    Activos
-                                </a>
-                                <!-- Botón Filtrar Inactivos -->
-                                <a href="?estado=inactivo" 
-                                   class="btn btn-warning btn-sm <?php echo $estado_filtro === 'inactivo' ? 'disabled' : ''; ?>">
-                                    Inactivos
-                                </a>
-                                <a href="assets/crud/students/add-students.php" class="btn btn-success btn-sm">
-                                <!-- Botón Agregar Estudiante -->
+                                <a href="?estado=activo" class="btn btn-info btn-sm <?php echo $estado_filtro === 'activo' ? 'disabled' : ''; ?>">Activos</a>
+                                <a href="?estado=inactivo" class="btn btn-warning btn-sm <?php echo $estado_filtro === 'inactivo' ? 'disabled' : ''; ?>">Inactivos</a>
                                 <a href="assets/crud/students/add-students.html" class="btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i> Agregar Estudiante
                                 </a>
                             </div>
                         </div>
+
+                        <!-- Barra de Búsqueda -->
                         <div class="card-body">
+                            <div class="mb-3">
+                                <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre, matrícula o correo...">
+                            </div>
+
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable">
                                     <thead>
@@ -87,7 +83,7 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="studentTableBody">
                                     <?php
 $query = "SELECT matricula, CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) AS nombre_completo, correo, estado, fecha_inscripcion 
           FROM alumnos 
@@ -106,20 +102,9 @@ if ($result->num_rows > 0) {
             <td>{$row['estado']}</td>
             <td>{$row['fecha_inscripcion']}</td>
             <td>
-                <!-- Botón Ver -->
-                <a href='assets/crud/students/view-student.php?id={$row['matricula']}' 
-                   class='btn btn-sm btn-info'>
-                    <i class='fas fa-eye'></i> Ver
-                </a>
-                <!-- Botón Editar -->
-                <a href='assets/crud/students/edit-student.php?id={$row['matricula']}' 
-                   class='btn btn-sm btn-warning'>
-                    <i class='fas fa-edit'></i> Editar
-                </a>
-                <!-- Botón Eliminar -->
-                <button class='btn btn-sm btn-danger' onclick='deleteStudent({$row['matricula']})'>
-                    <i class='fas fa-trash-alt'></i> Eliminar
-                </button>
+                <a href='assets/crud/students/view-student.php?id={$row['matricula']}' class='btn btn-sm btn-info'><i class='fas fa-eye'></i> Ver</a>
+                <a href='assets/crud/students/edit-student.php?id={$row['matricula']}' class='btn btn-sm btn-warning'><i class='fas fa-edit'></i> Editar</a>
+                <button class='btn btn-sm btn-danger' onclick='deleteStudent({$row['matricula']})'><i class='fas fa-trash-alt'></i> Eliminar</button>
             </td>
         </tr>";
     }
@@ -129,7 +114,6 @@ if ($result->num_rows > 0) {
 $stmt->close();
 $conn->close();
 ?>
-
                                     </tbody>
                                 </table>
                             </div>
@@ -147,6 +131,17 @@ $conn->close();
 
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Función para filtrar la tabla en tiempo real
+        document.getElementById("searchInput").addEventListener("input", function () {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll("#studentTableBody tr");
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? "" : "none";
+            });
+        });
+
         function deleteStudent(id) {
             const confirmDelete = confirm(`¿Seguro que deseas eliminar al estudiante con matrícula ${id}?`);
             if (confirmDelete) {
