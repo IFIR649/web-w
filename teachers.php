@@ -11,9 +11,37 @@
 </head>
 
 <body id="page-top">
+    <?php
+    // Incluir la conexión a la base de datos
+    include 'php/conexion.php';
+
+    // Verificar si se envió la solicitud para eliminar
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_teacher'])) {
+        $teacherId = intval($_POST['delete_teacher']);
+
+        // Desactivar restricciones de claves foráneas
+        $conn->query("SET FOREIGN_KEY_CHECKS=0;");
+
+        // Eliminar el maestro
+        $query = "DELETE FROM maestros WHERE id_maestro = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('i', $teacherId);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('Maestro eliminado exitosamente.'); window.location.href = 'teachers.php';</script>";
+        } else {
+            echo "<script>alert('Error al eliminar el maestro.');</script>";
+        }
+
+        $stmt->close();
+
+        // Reactivar restricciones de claves foráneas
+        $conn->query("SET FOREIGN_KEY_CHECKS=1;");
+    }
+    ?>
     <div id="wrapper">
         <div id="navbar-placeholder"></div>
-        <script src="assets/js/query.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             $(function () {
                 $("#navbar-placeholder").load("assets/navbar.html");
@@ -67,9 +95,6 @@
                                     </thead>
                                     <tbody>
                                         <?php
-                                        // Incluir archivo de conexión
-                                        include 'php/conexion.php';
-
                                         // Consulta para obtener los datos de los maestros
                                         $query = "SELECT id_maestro, CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) AS nombre_completo, 
                                                   correo, certificado, horas_tot FROM maestros";
@@ -91,9 +116,12 @@
                                                         <a href='edit-teacher.php?id={$row['id_maestro']}' class='btn btn-sm btn-warning'>
                                                             <i class='fas fa-edit'></i> Editar
                                                         </a>
-                                                        <a href='delete-teacher.php?id={$row['id_maestro']}' class='btn btn-sm btn-danger' onclick='return confirm(\"¿Estás seguro de eliminar este maestro?\")'>
-                                                            <i class='fas fa-trash-alt'></i> Eliminar
-                                                        </a>
+                                                        <form method='POST' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de eliminar este maestro?\");'>
+                                                            <input type='hidden' name='delete_teacher' value='{$row['id_maestro']}'>
+                                                            <button type='submit' class='btn btn-sm btn-danger'>
+                                                                <i class='fas fa-trash-alt'></i> Eliminar
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>";
                                             }
