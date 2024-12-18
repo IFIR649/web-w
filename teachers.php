@@ -1,3 +1,32 @@
+<?php
+// Incluir la conexión a la base de datos
+include 'php/conexion.php';
+
+// Verificar si se envió la solicitud para eliminar
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_teacher'])) {
+    $teacherId = intval($_POST['delete_teacher']);
+
+    // Desactivar restricciones de claves foráneas
+    $conn->query("SET FOREIGN_KEY_CHECKS=0;");
+
+    // Eliminar el maestro
+    $query = "DELETE FROM maestros WHERE id_maestro = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $teacherId);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Maestro eliminado exitosamente.'); window.location.href = 'teachers.php';</script>";
+    } else {
+        echo "<script>alert('Error al eliminar el maestro.');</script>";
+    }
+
+    $stmt->close();
+
+    // Reactivar restricciones de claves foráneas
+    $conn->query("SET FOREIGN_KEY_CHECKS=1;");
+}
+?>
+
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
@@ -8,40 +37,12 @@
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/Nunito.css">
     <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body id="page-top">
-    <?php
-    // Incluir la conexión a la base de datos
-    include 'php/conexion.php';
-
-    // Verificar si se envió la solicitud para eliminar
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_teacher'])) {
-        $teacherId = intval($_POST['delete_teacher']);
-
-        // Desactivar restricciones de claves foráneas
-        $conn->query("SET FOREIGN_KEY_CHECKS=0;");
-
-        // Eliminar el maestro
-        $query = "DELETE FROM maestros WHERE id_maestro = ?";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('i', $teacherId);
-
-        if ($stmt->execute()) {
-            echo "<script>alert('Maestro eliminado exitosamente.'); window.location.href = 'teachers.php';</script>";
-        } else {
-            echo "<script>alert('Error al eliminar el maestro.');</script>";
-        }
-
-        $stmt->close();
-
-        // Reactivar restricciones de claves foráneas
-        $conn->query("SET FOREIGN_KEY_CHECKS=1;");
-    }
-    ?>
     <div id="wrapper">
         <div id="navbar-placeholder"></div>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             $(function () {
                 $("#navbar-placeholder").load("assets/navbar.html");
@@ -74,11 +75,15 @@
                 <div class="container-fluid">
                     <h3 class="text-dark mb-4">Maestros</h3>
                     <div class="card shadow">
-                        <div class="card-header py-3">
+                        <!-- Botones y Búsqueda -->
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <p class="text-primary m-0 fw-bold">Lista de Maestros</p>
-                            <a href="add-teacher.html" class="btn btn-success btn-sm mt-2">
-                                <i class="fas fa-plus"></i> Agregar Maestro
-                            </a>
+                            <div>
+                                <input type="text" id="searchInput" class="form-control form-control-sm d-inline-block" placeholder="Buscar...">
+                                <a href="add-teacher.html" class="btn btn-success btn-sm mt-2">
+                                    <i class="fas fa-plus"></i> Agregar Maestro
+                                </a>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -145,6 +150,20 @@
         </div>
     </div>
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Filtrado de búsqueda dinámico
+        document.getElementById("searchInput").addEventListener("input", function () {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll("#dataTable tbody tr");
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll("td");
+                let rowContent = "";
+                cells.forEach(cell => rowContent += cell.textContent.toLowerCase() + " ");
+                row.style.display = rowContent.includes(filter) ? "" : "none";
+            });
+        });
+    </script>
 </body>
 
 </html>
