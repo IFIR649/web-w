@@ -3,30 +3,6 @@ include 'php/conexion.php'; // Cambia la ruta si "conexion.php" está en otra ub
 
 // Manejar el estado solicitado
 $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
-
-// Verificar si se envió la solicitud para eliminar
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_student'])) {
-    $studentId = intval($_POST['delete_student']);
-
-    // Desactivar restricciones de claves foráneas
-    $conn->query("SET FOREIGN_KEY_CHECKS=0;");
-
-    // Eliminar el estudiante
-    $query = "DELETE FROM alumnos WHERE matricula = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('i', $studentId);
-
-    if ($stmt->execute()) {
-        echo "<script>alert('Estudiante eliminado exitosamente.'); window.location.href = 'students.php';</script>";
-    } else {
-        echo "<script>alert('Error al eliminar el estudiante.');</script>";
-    }
-
-    $stmt->close();
-
-    // Reactivar restricciones de claves foráneas
-    $conn->query("SET FOREIGN_KEY_CHECKS=1;");
-}
 ?>
 
 <!DOCTYPE html>
@@ -92,6 +68,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_student'])) {
                                 <a href="assets/crud/students/add-students.html" class="btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i> Agregar Estudiante
                                 </a>
+                                <a href="?estado=activo" class="btn btn-info btn-sm <?php echo $estado_filtro === 'activo' ? 'disabled' : ''; ?>">Activos</a>
+                                <a href="?estado=inactivo" class="btn btn-warning btn-sm <?php echo $estado_filtro === 'inactivo' ? 'disabled' : ''; ?>">Inactivos</a>
+                                <a href="assets/crud/students/add-students.html" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Agregar Estudiante</a>
                             </div>
                         </div>
                         <div class="card-body">
@@ -140,6 +119,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_student'])) {
                                                             <i class='fas fa-trash-alt'></i> Eliminar
                                                         </button>
                                                     </form>
+
+                                                    <a href='assets/crud/students/view-student.php?id={$row['matricula']}' class='btn btn-sm btn-info'>
+                                                        <i class='fas fa-eye'></i> Ver
+                                                    </a>
+                                                    <a href='assets/crud/students/edit-student.php?id={$row['matricula']}' class='btn btn-sm btn-warning'>
+                                                        <i class='fas fa-edit'></i> Editar
+                                                    </a>
+                                                    <button class='btn btn-sm btn-danger' onclick='deleteStudent({$row['matricula']})'>
+                                                        <i class='fas fa-trash-alt'></i> Eliminar
+                                                    </button>
                                                 </td>
                                             </tr>";
                                         }
@@ -163,6 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_student'])) {
             </footer>
         </div>
     </div>
+
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 
