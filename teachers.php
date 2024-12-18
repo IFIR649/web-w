@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_teacher'])) {
                                                         <a href='view-teacher.php?id={$row['id_maestro']}' class='btn btn-sm btn-info'>
                                                             <i class='fas fa-eye'></i> Ver
                                                         </a>
-                                                        <a href='edit-teacher.php?id={$row['id_maestro']}' class='btn btn-sm btn-warning'>
+                                                        <a href='assets/crud/teachers/edit-teacher.php?id={$row['id_maestro']}' class='btn btn-sm btn-warning'>
                                                             <i class='fas fa-edit'></i> Editar
                                                         </a>
                                                         <form method='POST' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de eliminar este maestro?\");'>
