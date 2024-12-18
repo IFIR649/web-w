@@ -1,5 +1,5 @@
 <?php
-include 'php/conexion.php';
+include 'php/conexion.php'; // Cambia la ruta si "conexion.php" está en otra ubicación
 
 // Manejar el estado solicitado
 $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
@@ -15,12 +15,12 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/Nunito.css">
     <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
-    <script src="assets/js/query.js"></script>
 </head>
 
 <body id="page-top">
     <div id="wrapper">
         <div id="navbar-placeholder"></div>
+        <script src="assets/js/query.js"></script>
         <script>
             $(function () {
                 $("#navbar-placeholder").load("assets/navbar.html");
@@ -57,14 +57,21 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <p class="text-primary m-0 fw-bold">Lista de Estudiantes</p>
                             <div>
+                                <a href="?estado=activo" 
+                                   class="btn btn-info btn-sm <?php echo $estado_filtro === 'activo' ? 'disabled' : ''; ?>">
+                                    Activos
+                                </a>
+                                <a href="?estado=inactivo" 
+                                   class="btn btn-warning btn-sm <?php echo $estado_filtro === 'inactivo' ? 'disabled' : ''; ?>">
+                                    Inactivos
+                                </a>
+                                <a href="assets/crud/students/add-students.html" class="btn btn-success btn-sm">
+                                    <i class="fas fa-plus"></i> Agregar Estudiante
+                                </a>
                                 <a href="?estado=activo" class="btn btn-info btn-sm <?php echo $estado_filtro === 'activo' ? 'disabled' : ''; ?>">Activos</a>
                                 <a href="?estado=inactivo" class="btn btn-warning btn-sm <?php echo $estado_filtro === 'inactivo' ? 'disabled' : ''; ?>">Inactivos</a>
                                 <a href="assets/crud/students/add-students.html" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Agregar Estudiante</a>
                             </div>
-                        </div>
-                        <!-- Campo de Búsqueda -->
-                        <div class="card-header py-3">
-                            <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar por nombre, matrícula o correo">
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -98,6 +105,21 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                                                 <td>{$row['estado']}</td>
                                                 <td>{$row['fecha_inscripcion']}</td>
                                                 <td>
+                                                    <a href='assets/crud/students/view-student.php?id={$row['matricula']}' 
+                                                       class='btn btn-sm btn-info'>
+                                                        <i class='fas fa-eye'></i> Ver
+                                                    </a>
+                                                    <a href='assets/crud/students/edit-student.php?id={$row['matricula']}' 
+                                                       class='btn btn-sm btn-warning'>
+                                                        <i class='fas fa-edit'></i> Editar
+                                                    </a>
+                                                    <form method='POST' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de eliminar este estudiante?\");'>
+                                                        <input type='hidden' name='delete_student' value='{$row['matricula']}'>
+                                                        <button type='submit' class='btn btn-sm btn-danger'>
+                                                            <i class='fas fa-trash-alt'></i> Eliminar
+                                                        </button>
+                                                    </form>
+
                                                     <a href='assets/crud/students/view-student.php?id={$row['matricula']}' class='btn btn-sm btn-info'>
                                                         <i class='fas fa-eye'></i> Ver
                                                     </a>
@@ -132,32 +154,6 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
     </div>
 
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Función para buscar en la tabla dinámicamente
-        document.getElementById("searchInput").addEventListener("input", function () {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll("#dataTable tbody tr");
-
-            rows.forEach(row => {
-                const cells = row.querySelectorAll("td");
-                let rowContent = "";
-
-                cells.forEach(cell => {
-                    rowContent += cell.textContent.toLowerCase() + " ";
-                });
-
-                row.style.display = rowContent.includes(filter) ? "" : "none";
-            });
-        });
-
-        // Función para eliminar un estudiante
-        function deleteStudent(id) {
-            const confirmDelete = confirm(`¿Seguro que deseas eliminar al estudiante con matrícula ${id}?`);
-            if (confirmDelete) {
-                window.location.href = `delete-student.php?id=${id}`;
-            }
-        }
-    </script>
 </body>
 
 </html>
