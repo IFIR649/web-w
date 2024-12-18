@@ -1,3 +1,15 @@
+<?php
+session_start();
+if (!isset($_SESSION['usuario'])) {
+    header("Location: login.html");
+    exit();
+}
+include 'php/conexion.php'; // Cambia la ruta si "conexion.php" está en otra ubicación
+
+// Manejar el estado solicitado
+$estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
+?>
+
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
@@ -46,11 +58,19 @@
                 <div class="container-fluid">
                     <h3 class="text-dark mb-4">Estudiantes</h3>
                     <div class="card shadow">
-                        <div class="card-header py-3">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <p class="text-primary m-0 fw-bold">Lista de Estudiantes</p>
-                            <a href="assets/crud/students/add-students.html" class="btn btn-success btn-sm mt-2">
-                                <i class="fas fa-plus"></i> Agregar Estudiante
-                            </a>
+                            <div>
+                                <a href="?estado=activo" class="btn btn-info btn-sm <?php echo $estado_filtro === 'activo' ? 'disabled' : ''; ?>">
+                                    Activos
+                                </a>
+                                <a href="?estado=inactivo" class="btn btn-warning btn-sm <?php echo $estado_filtro === 'inactivo' ? 'disabled' : ''; ?>">
+                                    Inactivos
+                                </a>
+                                <a href="assets/crud/students/add-students.html" class="btn btn-success btn-sm">
+                                    <i class="fas fa-plus"></i> Agregar Estudiante
+                                </a>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -67,10 +87,13 @@
                                     </thead>
                                     <tbody>
                                     <?php
-include 'php/conexion.php'; // Cambia la ruta si "conexion.php" está en otra ubicación
-
-$query = "SELECT matricula, CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) AS nombre_completo, correo, estado, fecha_inscripcion FROM alumnos";
-$result = $conn->query($query);
+$query = "SELECT matricula, CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) AS nombre_completo, correo, estado, fecha_inscripcion 
+          FROM alumnos 
+          WHERE estado = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("s", $estado_filtro);
+$stmt->execute();
+$result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
@@ -94,8 +117,9 @@ if ($result->num_rows > 0) {
         </tr>";
     }
 } else {
-    echo "<tr><td colspan='6' class='text-center'>No hay estudiantes registrados.</td></tr>";
+    echo "<tr><td colspan='6' class='text-center'>No hay estudiantes $estado_filtro registrados.</td></tr>";
 }
+$stmt->close();
 $conn->close();
 ?>
 
