@@ -14,7 +14,7 @@
         }
 
         .form-container {
-            max-width: 600px;
+            max-width: 900px;
             margin: auto;
             background: white;
             padding: 30px;
@@ -22,14 +22,12 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .form-label {
-            font-weight: bold;
+        .section-title {
+            font-size: 1.3rem;
             color: #1f3c88;
-        }
-
-        .form-value {
-            font-size: 1.1rem;
-            color: #333;
+            margin-top: 20px;
+            border-bottom: 2px solid #1f3c88;
+            padding-bottom: 5px;
         }
 
         .btn-secondary {
@@ -41,11 +39,13 @@
             background-color: #b5b5b5;
         }
 
-        .form-title {
-            text-align: center;
-            font-size: 1.6rem;
-            color: #1f3c88;
-            margin-bottom: 20px;
+        table thead {
+            background-color: #1f3c88;
+            color: white;
+        }
+
+        table tbody tr:nth-child(odd) {
+            background-color: #f8f9fa;
         }
     </style>
     <script>
@@ -61,23 +61,32 @@
             }
 
             try {
-                const response = await fetch(`../../backend/get-group.php?id=${groupId}`);
-                const groupData = await response.json();
+                // Simulación de llamada al backend para obtener datos del grupo
+                const response = await fetch(`../../backend/get-group-details.php?id=${groupId}`);
+                const data = await response.json();
 
-                // Rellenar los campos con los datos obtenidos
-                document.getElementById("num").textContent = groupData.num;
-                document.getElementById("costo_hora").textContent = `$${groupData.costo_hora}`;
-                document.getElementById("intensidad").textContent = groupData.intensidad;
-                document.getElementById("idioma").textContent = groupData.idioma || "No asignado";
-                document.getElementById("libro").textContent = groupData.libro || "No asignado";
-                document.getElementById("nivel").textContent = groupData.nivel || "No asignado";
-                document.getElementById("horas_tot").textContent = groupData.horas_tot + " horas";
-                document.getElementById("fecha_inicio").textContent = groupData.fecha_inicio;
-                document.getElementById("fecha_fin").textContent = groupData.fecha_fin;
+                // Rellenar los datos del grupo
+                document.getElementById("num").textContent = data.group.num;
+                document.getElementById("costo_hora").textContent = `$${data.group.costo_hora}`;
+                document.getElementById("intensidad").textContent = data.group.intensidad;
+                document.getElementById("maestro").textContent = data.teacher;
+                document.getElementById("horario").textContent = `${data.schedule.dia_semana} de ${data.schedule.hora_inicio} a ${data.schedule.hora_fin}`;
 
+                // Llenar tabla de alumnos
+                const alumnosTable = document.getElementById("alumnosTable");
+                alumnosTable.innerHTML = ""; // Limpiar datos previos
+                data.students.forEach(student => {
+                    alumnosTable.innerHTML += `
+                        <tr>
+                            <td>${student.matricula}</td>
+                            <td>${student.nombre}</td>
+                            <td>${student.correo}</td>
+                        </tr>
+                    `;
+                });
             } catch (error) {
-                alert("Error al cargar los datos del grupo.");
                 console.error(error);
+                alert("Error al cargar los datos del grupo.");
                 window.location.href = "../groups/index.html";
             }
         };
@@ -86,46 +95,41 @@
 
 <body>
     <div class="form-container mt-5">
-        <h3 class="form-title">Detalles del Grupo</h3>
-        <div class="mb-3">
-            <label class="form-label">Número de Grupo:</label>
-            <p id="num" class="form-value"></p>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Costo por Hora:</label>
-            <p id="costo_hora" class="form-value"></p>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Intensidad:</label>
-            <p id="intensidad" class="form-value"></p>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Idioma:</label>
-            <p id="idioma" class="form-value"></p>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Libro:</label>
-            <p id="libro" class="form-value"></p>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Nivel:</label>
-            <p id="nivel" class="form-value"></p>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Horas Totales:</label>
-            <p id="horas_tot" class="form-value"></p>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Fecha de Inicio:</label>
-            <p id="fecha_inicio" class="form-value"></p>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Fecha de Fin:</label>
-            <p id="fecha_fin" class="form-value"></p>
+        <h3 class="text-center text-primary mb-4">Detalles del Grupo</h3>
+
+        <!-- Información General del Grupo -->
+        <h4 class="section-title">Información del Grupo</h4>
+        <div class="mb-3"><strong>Número de Grupo:</strong> <span id="num"></span></div>
+        <div class="mb-3"><strong>Costo por Hora:</strong> <span id="costo_hora"></span></div>
+        <div class="mb-3"><strong>Intensidad:</strong> <span id="intensidad"></span></div>
+
+        <!-- Información del Maestro -->
+        <h4 class="section-title">Maestro</h4>
+        <div class="mb-3"><strong>Nombre del Maestro:</strong> <span id="maestro"></span></div>
+
+        <!-- Horario -->
+        <h4 class="section-title">Horario</h4>
+        <div class="mb-3"><strong>Horario del Grupo:</strong> <span id="horario"></span></div>
+
+        <!-- Alumnos del Grupo -->
+        <h4 class="section-title">Alumnos en el Grupo</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Matrícula</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                    </tr>
+                </thead>
+                <tbody id="alumnosTable">
+                    <!-- Los datos de los alumnos se cargarán aquí -->
+                </tbody>
+            </table>
         </div>
 
         <!-- Botón para regresar -->
-        <div class="text-end">
+        <div class="text-end mt-4">
             <a href="../groups/index.html" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Volver
             </a>
