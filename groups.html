@@ -8,14 +8,14 @@
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/Nunito.css">
     <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
-    <script src="assets/js/query.js"></script>
 </head>
 
 <body id="page-top">
     <div id="wrapper">
         <div id="navbar-placeholder"></div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
-            $(function(){
+            $(function () {
                 $("#navbar-placeholder").load("assets/navbar.html");
             });
         </script>
@@ -23,11 +23,16 @@
             <div id="content">
                 <nav class="navbar navbar-expand bg-white shadow mb-4 topbar">
                     <div class="container-fluid">
-                        <button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button">
+                            <i class="fas fa-bars"></i>
+                        </button>
                         <ul class="navbar-nav flex-nowrap ms-auto">
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow">
-                                    <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><span class="d-none d-lg-inline me-2 text-gray-600 small">Admin</span><img class="border rounded-circle img-profile" src="assets/img/logo_letra.png"></a>
+                                    <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">
+                                        <span class="d-none d-lg-inline me-2 text-gray-600 small">Admin</span>
+                                        <img class="border rounded-circle img-profile" src="assets/img/logo_letra.png">
+                                    </a>
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
                                         <a class="dropdown-item" href="profile.html"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Perfil</a>
                                         <div class="dropdown-divider"></div>
@@ -62,34 +67,47 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>001</td>
-                                            <td>101</td>
-                                            <td>3 horas/semana</td>
-                                            <td>Inglés</td>
-                                            <td>A2</td>
-                                            <td>2023-09-01</td>
-                                            <td>2023-12-15</td>
-                                            <td>
-                                                <a class="btn btn-sm btn-info" href="#">Ver</a>
-                                                <a class="btn btn-sm btn-warning" href="#">Editar</a>
-                                                <a class="btn btn-sm btn-danger" href="#">Eliminar</a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>002</td>
-                                            <td>102</td>
-                                            <td>6 horas/semana</td>
-                                            <td>Francés</td>
-                                            <td>B1</td>
-                                            <td>2023-09-15</td>
-                                            <td>2024-01-15</td>
-                                            <td>
-                                                <a class="btn btn-sm btn-info" href="#">Ver</a>
-                                                <a class="btn btn-sm btn-warning" href="#">Editar</a>
-                                                <a class="btn btn-sm btn-danger" href="#">Eliminar</a>
-                                            </td>
-                                        </tr>
+                                        <?php
+                                        // Incluir la conexión
+                                        include 'php/conexion.php';
+
+                                        // Consulta para obtener la información de grupos
+                                        $query = "SELECT g.id_grupo, g.num, g.intensidad, g.fecha_inicio, g.fecha_fin, 
+                                                         i.nombre AS idioma, le.name AS nivel
+                                                  FROM grupos g
+                                                  JOIN idioma i ON g.id_idioma = i.id_idioma
+                                                  JOIN level le ON g.id_level = le.id_level";
+                                        $result = $conn->query($query);
+
+                                        // Generar filas de la tabla
+                                        if ($result->num_rows > 0) {
+                                            while ($row = $result->fetch_assoc()) {
+                                                echo "<tr>
+                                                    <td>{$row['id_grupo']}</td>
+                                                    <td>{$row['num']}</td>
+                                                    <td>{$row['intensidad']}</td>
+                                                    <td>{$row['idioma']}</td>
+                                                    <td>{$row['nivel']}</td>
+                                                    <td>{$row['fecha_inicio']}</td>
+                                                    <td>{$row['fecha_fin']}</td>
+                                                    <td>
+                                                        <a href='view-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-info'>
+                                                            <i class='fas fa-eye'></i> Ver
+                                                        </a>
+                                                        <a href='edit-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-warning'>
+                                                            <i class='fas fa-edit'></i> Editar
+                                                        </a>
+                                                        <a href='delete-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-danger' onclick='return confirm(\"¿Estás seguro de eliminar este grupo?\")'>
+                                                            <i class='fas fa-trash-alt'></i> Eliminar
+                                                        </a>
+                                                    </td>
+                                                </tr>";
+                                            }
+                                        } else {
+                                            echo "<tr><td colspan='8' class='text-center'>No hay grupos registrados.</td></tr>";
+                                        }
+                                        $conn->close();
+                                        ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -99,14 +117,14 @@
             </div>
             <footer class="bg-white sticky-footer">
                 <div class="container my-auto">
-                    <div class="text-center my-auto copyright"><span>Copyright © Lingus 2024</span></div>
+                    <div class="text-center my-auto copyright">
+                        <span>Copyright © Lingus 2024</span>
+                    </div>
                 </div>
             </footer>
         </div>
-        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/theme.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
