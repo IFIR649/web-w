@@ -91,8 +91,8 @@
                                                     <td>{$row['fecha_inicio']}</td>
                                                     <td>{$row['fecha_fin']}</td>
                                                     <td>
-                                                        <a href='view-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-info'>
-                                                            <i class='fas fa-eye'></i> Ver
+                                                            <a href='assets/crud/groups/view-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-info'>
+                                                                <i class='fas fa-eye'></i> Ver
                                                         </a>
                                                         <a href='edit-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-warning'>
                                                             <i class='fas fa-edit'></i> Editar
