@@ -35,13 +35,13 @@ if ($row = $result->fetch_assoc()) {
     } else {
         echo "<script>
             alert('Contraseña incorrecta.');
-            window.location.href = '../login.html';
+            window.location.href = '../index.html';
         </script>";
     }
 } else {
     echo "<script>
         alert('Usuario no encontrado.');
-        window.location.href = '../login.html';
+        window.location.href = '../index.html';
     </script>";
 }
 
