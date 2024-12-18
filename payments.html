@@ -8,14 +8,14 @@
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/Nunito.css">
     <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
-    <script src="assets/js/query.js"></script>
 </head>
 
 <body id="page-top">
     <div id="wrapper">
         <div id="navbar-placeholder"></div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
-            $(function(){
+            $(function () {
                 $("#navbar-placeholder").load("assets/navbar.html");
             });
         </script>
@@ -23,11 +23,16 @@
             <div id="content">
                 <nav class="navbar navbar-expand bg-white shadow mb-4 topbar">
                     <div class="container-fluid">
-                        <button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button">
+                            <i class="fas fa-bars"></i>
+                        </button>
                         <ul class="navbar-nav flex-nowrap ms-auto">
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow">
-                                    <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><span class="d-none d-lg-inline me-2 text-gray-600 small">Admin</span><img class="border rounded-circle img-profile" src="assets/img/logo_letra.png"></a>
+                                    <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">
+                                        <span class="d-none d-lg-inline me-2 text-gray-600 small">Admin</span>
+                                        <img class="border rounded-circle img-profile" src="assets/img/logo_letra.png">
+                                    </a>
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
                                         <a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Perfil</a>
                                         <div class="dropdown-divider"></div>
@@ -60,32 +65,51 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>001</td>
-                                            <td>Juan Pérez</td>
-                                            <td>1001</td>
-                                            <td>Tarjeta de Crédito</td>
-                                            <td>$1,200.00</td>
-                                            <td>2023-12-01</td>
-                                            <td>
-                                                <a class="btn btn-sm btn-info" href="#">Ver</a>
-                                                <a class="btn btn-sm btn-warning" href="#">Editar</a>
-                                                <a class="btn btn-sm btn-danger" href="#">Eliminar</a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>002</td>
-                                            <td>María López</td>
-                                            <td>1002</td>
-                                            <td>Transferencia Bancaria</td>
-                                            <td>$1,500.00</td>
-                                            <td>2023-12-05</td>
-                                            <td>
-                                                <a class="btn btn-sm btn-info" href="#">Ver</a>
-                                                <a class="btn btn-sm btn-warning" href="#">Editar</a>
-                                                <a class="btn btn-sm btn-danger" href="#">Eliminar</a>
-                                            </td>
-                                        </tr>
+                                        <?php
+                                        // Incluir la conexión
+                                        include 'php/conexion.php';
+
+                                        // Consulta para obtener la información de pagos
+                                        $query = "SELECT p.id_pago, 
+                                                         CONCAT(a.nombre, ' ', a.apellido_paterno, ' ', a.apellido_materno) AS alumno, 
+                                                         a.matricula, 
+                                                         p.forma_pago, 
+                                                         p.monto, 
+                                                         pt.fecha_pago
+                                                  FROM pago p
+                                                  JOIN alumnos a ON p.matricula = a.matricula
+                                                  LEFT JOIN pago_total pt ON pt.id_pago = p.id_pago";
+
+                                        $result = $conn->query($query);
+
+                                        // Verificar si hay resultados
+                                        if ($result->num_rows > 0) {
+                                            while ($row = $result->fetch_assoc()) {
+                                                echo "<tr>
+                                                    <td>{$row['id_pago']}</td>
+                                                    <td>{$row['alumno']}</td>
+                                                    <td>{$row['matricula']}</td>
+                                                    <td>{$row['forma_pago']}</td>
+                                                    <td>\${$row['monto']}</td>
+                                                    <td>{$row['fecha_pago']}</td>
+                                                    <td>
+                                                        <a href='view-payment.php?id={$row['id_pago']}' class='btn btn-sm btn-info'>
+                                                            <i class='fas fa-eye'></i> Ver
+                                                        </a>
+                                                        <a href='edit-payment.php?id={$row['id_pago']}' class='btn btn-sm btn-warning'>
+                                                            <i class='fas fa-edit'></i> Editar
+                                                        </a>
+                                                        <a href='delete-payment.php?id={$row['id_pago']}' class='btn btn-sm btn-danger' onclick='return confirm(\"¿Estás seguro de eliminar este pago?\")'>
+                                                            <i class='fas fa-trash-alt'></i> Eliminar
+                                                        </a>
+                                                    </td>
+                                                </tr>";
+                                            }
+                                        } else {
+                                            echo "<tr><td colspan='7' class='text-center'>No hay pagos registrados.</td></tr>";
+                                        }
+                                        $conn->close();
+                                        ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -95,14 +119,14 @@
             </div>
             <footer class="bg-white sticky-footer">
                 <div class="container my-auto">
-                    <div class="text-center my-auto copyright"><span>Copyright © Lingus 2024</span></div>
+                    <div class="text-center my-auto copyright">
+                        <span>Copyright © Lingus 2024</span>
+                    </div>
                 </div>
             </footer>
         </div>
-        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/theme.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

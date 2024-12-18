@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Grupos - Lingus</title>
+    <title>Idiomas - Lingus</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/Nunito.css">
     <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
@@ -34,7 +34,7 @@
                                         <img class="border rounded-circle img-profile" src="assets/img/logo_letra.png">
                                     </a>
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
-                                        <a class="dropdown-item" href="profile.html"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Perfil</a>
+                                        <a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Perfil</a>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="logout.html"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Cerrar sesión</a>
                                     </div>
@@ -44,12 +44,13 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">Grupos</h3>
+                    <h3 class="text-dark mb-4">Idiomas</h3>
                     <div class="card shadow">
                         <div class="card-header py-3">
-                            <p class="text-primary m-0 fw-bold">Lista de Grupos</p>
-                            <a class="btn btn-success btn-sm mt-2" href="add-group.html"><i class="fas fa-plus"></i> Agregar Grupo</a>
-                            <a class="btn btn-primary btn-sm mt-2" href="exportar.php"><i class="fas fa-file-excel"></i> Exportar Base de Datos</a>
+                            <p class="text-primary m-0 fw-bold">Lista de Idiomas</p>
+                            <a class="btn btn-success btn-sm mt-2" href="add-language.html">
+                                <i class="fas fa-plus"></i> Agregar Idioma
+                            </a>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -57,54 +58,40 @@
                                     <thead>
                                         <tr>
                                             <th>ID</th>
-                                            <th>Número</th>
-                                            <th>Intensidad</th>
                                             <th>Idioma</th>
-                                            <th>Nivel</th>
-                                            <th>Fecha Inicio</th>
-                                            <th>Fecha Fin</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        // Incluir la conexión
+                                        // Incluir la conexión a la base de datos
                                         include 'php/conexion.php';
 
-                                        // Consulta para obtener la información de grupos
-                                        $query = "SELECT g.id_grupo, g.num, g.intensidad, g.fecha_inicio, g.fecha_fin, 
-                                                         i.nombre AS idioma, le.name AS nivel
-                                                  FROM grupos g
-                                                  JOIN idioma i ON g.id_idioma = i.id_idioma
-                                                  JOIN level le ON g.id_level = le.id_level";
+                                        // Consulta para obtener los idiomas
+                                        $query = "SELECT id_idioma, nombre FROM idioma";
                                         $result = $conn->query($query);
 
-                                        // Generar filas de la tabla
+                                        // Mostrar resultados
                                         if ($result->num_rows > 0) {
                                             while ($row = $result->fetch_assoc()) {
                                                 echo "<tr>
-                                                    <td>{$row['id_grupo']}</td>
-                                                    <td>{$row['num']}</td>
-                                                    <td>{$row['intensidad']}</td>
-                                                    <td>{$row['idioma']}</td>
-                                                    <td>{$row['nivel']}</td>
-                                                    <td>{$row['fecha_inicio']}</td>
-                                                    <td>{$row['fecha_fin']}</td>
+                                                    <td>{$row['id_idioma']}</td>
+                                                    <td>{$row['nombre']}</td>
                                                     <td>
-                                                            <a href='assets/crud/groups/view-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-info'>
-                                                                <i class='fas fa-eye'></i> Ver
+                                                        <a href='view-language.php?id={$row['id_idioma']}' class='btn btn-sm btn-info'>
+                                                            <i class='fas fa-eye'></i> Ver
                                                         </a>
-                                                        <a href='edit-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-warning'>
+                                                        <a href='edit-language.php?id={$row['id_idioma']}' class='btn btn-sm btn-warning'>
                                                             <i class='fas fa-edit'></i> Editar
                                                         </a>
-                                                        <a href='delete-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-danger' onclick='return confirm(\"¿Estás seguro de eliminar este grupo?\")'>
+                                                        <a href='delete-language.php?id={$row['id_idioma']}' class='btn btn-sm btn-danger' onclick='return confirm(\"¿Estás seguro de eliminar este idioma?\")'>
                                                             <i class='fas fa-trash-alt'></i> Eliminar
                                                         </a>
                                                     </td>
                                                 </tr>";
                                             }
                                         } else {
-                                            echo "<tr><td colspan='8' class='text-center'>No hay grupos registrados.</td></tr>";
+                                            echo "<tr><td colspan='3' class='text-center'>No hay idiomas registrados.</td></tr>";
                                         }
                                         $conn->close();
                                         ?>

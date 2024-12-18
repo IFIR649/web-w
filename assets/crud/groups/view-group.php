@@ -53,7 +53,7 @@
 <body>
     <?php
     // Conexión a la base de datos
-    include '../../php/conexion.php';
+    include '../../../php/conexion.php';
 
     // Verificar si se proporciona el ID del grupo
     if (!isset($_GET['id'])) {
