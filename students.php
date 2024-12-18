@@ -53,15 +53,21 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                 <div class="container-fluid">
                     <h3 class="text-dark mb-4">Estudiantes</h3>
                     <div class="card shadow">
+                        <!-- Botones de Filtro y Agregar -->
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <p class="text-primary m-0 fw-bold">Lista de Estudiantes</p>
                             <div>
-                                <a href="?estado=activo" class="btn btn-info btn-sm <?php echo $estado_filtro === 'activo' ? 'disabled' : ''; ?>">
+                                <!-- Botón Filtrar Activos -->
+                                <a href="?estado=activo" 
+                                   class="btn btn-info btn-sm <?php echo $estado_filtro === 'activo' ? 'disabled' : ''; ?>">
                                     Activos
                                 </a>
-                                <a href="?estado=inactivo" class="btn btn-warning btn-sm <?php echo $estado_filtro === 'inactivo' ? 'disabled' : ''; ?>">
+                                <!-- Botón Filtrar Inactivos -->
+                                <a href="?estado=inactivo" 
+                                   class="btn btn-warning btn-sm <?php echo $estado_filtro === 'inactivo' ? 'disabled' : ''; ?>">
                                     Inactivos
                                 </a>
+                                <!-- Botón Agregar Estudiante -->
                                 <a href="assets/crud/students/add-students.html" class="btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i> Agregar Estudiante
                                 </a>
@@ -99,12 +105,17 @@ if ($result->num_rows > 0) {
             <td>{$row['estado']}</td>
             <td>{$row['fecha_inscripcion']}</td>
             <td>
-                <a href='assets/crud/students/view-student.php?id={$row['matricula']}' class='btn btn-sm btn-info'>
+                <!-- Botón Ver -->
+                <a href='assets/crud/students/view-student.php?id={$row['matricula']}' 
+                   class='btn btn-sm btn-info'>
                     <i class='fas fa-eye'></i> Ver
                 </a>
-                <a href='assets/crud/students/edit-student.php?id={$row['matricula']}' class='btn btn-sm btn-warning'>
+                <!-- Botón Editar -->
+                <a href='assets/crud/students/edit-student.php?id={$row['matricula']}' 
+                   class='btn btn-sm btn-warning'>
                     <i class='fas fa-edit'></i> Editar
                 </a>
+                <!-- Botón Eliminar -->
                 <button class='btn btn-sm btn-danger' onclick='deleteStudent({$row['matricula']})'>
                     <i class='fas fa-trash-alt'></i> Eliminar
                 </button>
