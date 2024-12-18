@@ -11,9 +11,37 @@
 </head>
 
 <body id="page-top">
+    <?php
+    // Incluir la conexión a la base de datos
+    include 'php/conexion.php';
+
+    // Verificar si se envió la solicitud para eliminar
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_language'])) {
+        $languageId = intval($_POST['delete_language']);
+
+        // Desactivar restricciones de claves foráneas
+        $conn->query("SET FOREIGN_KEY_CHECKS=0;");
+
+        // Eliminar el idioma
+        $query = "DELETE FROM idioma WHERE id_idioma = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('i', $languageId);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('Idioma eliminado exitosamente.'); window.location.href = 'languages.php';</script>";
+        } else {
+            echo "<script>alert('Error al eliminar el idioma.');</script>";
+        }
+
+        $stmt->close();
+
+        // Reactivar restricciones de claves foráneas
+        $conn->query("SET FOREIGN_KEY_CHECKS=1;");
+    }
+    ?>
     <div id="wrapper">
         <div id="navbar-placeholder"></div>
-        <script src="assets/js/query.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             $(function () {
                 $("#navbar-placeholder").load("assets/navbar.html");
@@ -64,9 +92,6 @@
                                     </thead>
                                     <tbody>
                                         <?php
-                                        // Incluir la conexión a la base de datos
-                                        include 'php/conexion.php';
-
                                         // Consulta para obtener los idiomas
                                         $query = "SELECT id_idioma, nombre FROM idioma";
                                         $result = $conn->query($query);
@@ -84,9 +109,12 @@
                                                         <a href='edit-language.php?id={$row['id_idioma']}' class='btn btn-sm btn-warning'>
                                                             <i class='fas fa-edit'></i> Editar
                                                         </a>
-                                                        <a href='delete-language.php?id={$row['id_idioma']}' class='btn btn-sm btn-danger' onclick='return confirm(\"¿Estás seguro de eliminar este idioma?\")'>
-                                                            <i class='fas fa-trash-alt'></i> Eliminar
-                                                        </a>
+                                                        <form method='POST' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de eliminar este idioma?\");'>
+                                                            <input type='hidden' name='delete_language' value='{$row['id_idioma']}'>
+                                                            <button type='submit' class='btn btn-sm btn-danger'>
+                                                                <i class='fas fa-trash-alt'></i> Eliminar
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>";
                                             }
