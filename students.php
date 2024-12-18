@@ -1,9 +1,4 @@
 <?php
-session_start();
-if (!isset($_SESSION['usuario'])) {
-    header("Location: login.html");
-    exit();
-}
 include 'php/conexion.php'; // Cambia la ruta si "conexion.php" está en otra ubicación
 
 // Manejar el estado solicitado
