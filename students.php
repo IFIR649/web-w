@@ -62,7 +62,7 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                                 <a href="?estado=inactivo" class="btn btn-warning btn-sm <?php echo $estado_filtro === 'inactivo' ? 'disabled' : ''; ?>">
                                     Inactivos
                                 </a>
-                                <a href="assets/crud/students/add-students.html" class="btn btn-success btn-sm">
+                                <a href="assets/crud/students/add-students.php" class="btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i> Agregar Estudiante
                                 </a>
                             </div>
