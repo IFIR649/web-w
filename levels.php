@@ -1,3 +1,31 @@
+<?php
+include 'php/conexion.php'; // Incluir la conexión a la base de datos
+
+// Verificar si se envió la solicitud para eliminar
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_level'])) {
+    $levelId = intval($_POST['delete_level']);
+
+    // Desactivar restricciones de claves foráneas
+    $conn->query("SET FOREIGN_KEY_CHECKS=0;");
+
+    // Eliminar el nivel
+    $query = "DELETE FROM level WHERE id_level = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $levelId);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Nivel eliminado exitosamente.'); window.location.href = 'levels.php';</script>";
+    } else {
+        echo "<script>alert('Error al eliminar el nivel.');</script>";
+    }
+
+    $stmt->close();
+
+    // Reactivar restricciones de claves foráneas
+    $conn->query("SET FOREIGN_KEY_CHECKS=1;");
+}
+?>
+
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
@@ -67,9 +95,6 @@
                                     </thead>
                                     <tbody>
                                         <?php
-                                        // Incluir la conexión a la base de datos
-                                        include 'php/conexion.php';
-
                                         // Consulta para obtener los niveles
                                         $query = "SELECT id_level, cefr_level, name, modu, unite FROM level";
                                         $result = $conn->query($query);
@@ -90,9 +115,12 @@
                                                         <a href='edit-level.php?id={$row['id_level']}' class='btn btn-sm btn-warning'>
                                                             <i class='fas fa-edit'></i> Editar
                                                         </a>
-                                                        <a href='delete-level.php?id={$row['id_level']}' class='btn btn-sm btn-danger' onclick='return confirm(\"¿Estás seguro de eliminar este nivel?\")'>
-                                                            <i class='fas fa-trash-alt'></i> Eliminar
-                                                        </a>
+                                                        <form method='POST' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de eliminar este nivel?\");'>
+                                                            <input type='hidden' name='delete_level' value='{$row['id_level']}'>
+                                                            <button type='submit' class='btn btn-sm btn-danger'>
+                                                                <i class='fas fa-trash-alt'></i> Eliminar
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>";
                                             }

@@ -3,6 +3,30 @@ include 'php/conexion.php';
 
 // Manejar el estado solicitado
 $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
+
+// Verificar si se envió la solicitud para eliminar
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_student'])) {
+    $studentId = intval($_POST['delete_student']);
+
+    // Desactivar restricciones de claves foráneas
+    $conn->query("SET FOREIGN_KEY_CHECKS=0;");
+
+    // Eliminar el estudiante
+    $query = "DELETE FROM alumnos WHERE matricula = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $studentId);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Estudiante eliminado exitosamente.'); window.location.href = 'students.php';</script>";
+    } else {
+        echo "<script>alert('Error al eliminar el estudiante.');</script>";
+    }
+
+    $stmt->close();
+
+    // Reactivar restricciones de claves foráneas
+    $conn->query("SET FOREIGN_KEY_CHECKS=1;");
+}
 ?>
 
 <!DOCTYPE html>
@@ -57,9 +81,26 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <p class="text-primary m-0 fw-bold">Lista de Estudiantes</p>
                             <div>
+<<<<<<< HEAD
+                                <a href="?estado=activo" 
+                                   class="btn btn-info btn-sm <?php echo $estado_filtro === 'activo' ? 'disabled' : ''; ?>">
+                                    Activos
+                                </a>
+                                <a href="?estado=inactivo" 
+                                   class="btn btn-warning btn-sm <?php echo $estado_filtro === 'inactivo' ? 'disabled' : ''; ?>">
+                                    Inactivos
+                                </a>
+=======
                                 <a href="?estado=activo" class="btn btn-info btn-sm <?php echo $estado_filtro === 'activo' ? 'disabled' : ''; ?>">Activos</a>
                                 <a href="?estado=inactivo" class="btn btn-warning btn-sm <?php echo $estado_filtro === 'inactivo' ? 'disabled' : ''; ?>">Inactivos</a>
+<<<<<<< HEAD
                                 <a href="assets/crud/students/add-students.html" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Agregar Estudiante</a>
+=======
+>>>>>>> 0160614562c44bafe7414556a7ee269fbf35b367
+                                <a href="assets/crud/students/add-students.html" class="btn btn-success btn-sm">
+                                    <i class="fas fa-plus"></i> Agregar Estudiante
+                                </a>
+>>>>>>> a50bd5c9fcda2a094a25b83f9184db44d71901b4
                             </div>
                         </div>
                         <!-- Campo de Búsqueda -->
@@ -81,6 +122,10 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                                     </thead>
                                     <tbody>
                                     <?php
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> a50bd5c9fcda2a094a25b83f9184db44d71901b4
                                     $query = "SELECT matricula, CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) AS nombre_completo, correo, estado, fecha_inscripcion 
                                               FROM alumnos 
                                               WHERE estado = ?";
@@ -88,6 +133,7 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                                     $stmt->bind_param("s", $estado_filtro);
                                     $stmt->execute();
                                     $result = $stmt->get_result();
+<<<<<<< HEAD
 
                                     if ($result->num_rows > 0) {
                                         while ($row = $result->fetch_assoc()) {
@@ -116,6 +162,72 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                                     $stmt->close();
                                     $conn->close();
                                     ?>
+=======
+
+                                    if ($result->num_rows > 0) {
+                                        while ($row = $result->fetch_assoc()) {
+                                            echo "<tr>
+                                                <td>{$row['matricula']}</td>
+                                                <td>{$row['nombre_completo']}</td>
+                                                <td>{$row['correo']}</td>
+                                                <td>{$row['estado']}</td>
+                                                <td>{$row['fecha_inscripcion']}</td>
+                                                <td>
+                                                    <a href='assets/crud/students/view-student.php?id={$row['matricula']}' 
+                                                       class='btn btn-sm btn-info'>
+                                                        <i class='fas fa-eye'></i> Ver
+                                                    </a>
+                                                    <a href='assets/crud/students/edit-student.php?id={$row['matricula']}' 
+                                                       class='btn btn-sm btn-warning'>
+                                                        <i class='fas fa-edit'></i> Editar
+                                                    </a>
+                                                    <form method='POST' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de eliminar este estudiante?\");'>
+                                                        <input type='hidden' name='delete_student' value='{$row['matricula']}'>
+                                                        <button type='submit' class='btn btn-sm btn-danger'>
+                                                            <i class='fas fa-trash-alt'></i> Eliminar
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='6' class='text-center'>No hay estudiantes $estado_filtro registrados.</td></tr>";
+                                    }
+                                    $stmt->close();
+                                    $conn->close();
+                                    ?>
+=======
+$query = "SELECT matricula, CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) AS nombre_completo, correo, estado, fecha_inscripcion 
+          FROM alumnos 
+          WHERE estado = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("s", $estado_filtro);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>
+            <td>{$row['matricula']}</td>
+            <td>{$row['nombre_completo']}</td>
+            <td>{$row['correo']}</td>
+            <td>{$row['estado']}</td>
+            <td>{$row['fecha_inscripcion']}</td>
+            <td>
+                <a href='assets/crud/students/view-student.php?id={$row['matricula']}' class='btn btn-sm btn-info'><i class='fas fa-eye'></i> Ver</a>
+                <a href='assets/crud/students/edit-student.php?id={$row['matricula']}' class='btn btn-sm btn-warning'><i class='fas fa-edit'></i> Editar</a>
+                <button class='btn btn-sm btn-danger' onclick='deleteStudent({$row['matricula']})'><i class='fas fa-trash-alt'></i> Eliminar</button>
+            </td>
+        </tr>";
+    }
+} else {
+    echo "<tr><td colspan='6' class='text-center'>No hay estudiantes $estado_filtro registrados.</td></tr>";
+}
+$stmt->close();
+$conn->close();
+?>
+>>>>>>> 0160614562c44bafe7414556a7ee269fbf35b367
+>>>>>>> a50bd5c9fcda2a094a25b83f9184db44d71901b4
                                     </tbody>
                                 </table>
                             </div>
@@ -130,8 +242,9 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
             </footer>
         </div>
     </div>
-
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+<<<<<<< HEAD
+=======
     <script>
         // Función para buscar en la tabla dinámicamente
         document.getElementById("searchInput").addEventListener("input", function () {
@@ -158,6 +271,7 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
             }
         }
     </script>
+>>>>>>> 0160614562c44bafe7414556a7ee269fbf35b367
 </body>
 
 </html>

@@ -1,3 +1,31 @@
+<?php
+include 'php/conexion.php'; // Incluir la conexión a la base de datos
+
+// Verificar si se envió la solicitud para eliminar
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_book'])) {
+    $bookId = intval($_POST['delete_book']);
+
+    // Desactivar restricciones de claves foráneas
+    $conn->query("SET FOREIGN_KEY_CHECKS=0;");
+
+    // Eliminar el libro
+    $query = "DELETE FROM libro WHERE id_libro = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $bookId);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Libro eliminado exitosamente.'); window.location.href = 'libros.php';</script>";
+    } else {
+        echo "<script>alert('Error al eliminar el libro.');</script>";
+    }
+
+    $stmt->close();
+
+    // Reactivar restricciones de claves foráneas
+    $conn->query("SET FOREIGN_KEY_CHECKS=1;");
+}
+?>
+
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
@@ -64,9 +92,6 @@
                                     </thead>
                                     <tbody>
                                         <?php
-                                        // Incluir conexión a la base de datos
-                                        include 'php/conexion.php';
-
                                         // Consulta para obtener los libros
                                         $query = "SELECT id_libro, nombre FROM libro";
                                         $result = $conn->query($query);
@@ -84,9 +109,12 @@
                                                         <a href='edit-book.php?id={$row['id_libro']}' class='btn btn-sm btn-warning'>
                                                             <i class='fas fa-edit'></i> Editar
                                                         </a>
-                                                        <a href='delete-book.php?id={$row['id_libro']}' class='btn btn-sm btn-danger' onclick='return confirm(\"¿Estás seguro de eliminar este libro?\")'>
-                                                            <i class='fas fa-trash-alt'></i> Eliminar
-                                                        </a>
+                                                        <form method='POST' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de eliminar este libro?\");'>
+                                                            <input type='hidden' name='delete_book' value='{$row['id_libro']}'>
+                                                            <button type='submit' class='btn btn-sm btn-danger'>
+                                                                <i class='fas fa-trash-alt'></i> Eliminar
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>";
                                             }
