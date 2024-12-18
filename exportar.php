@@ -10,29 +10,25 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Configurar las cabeceras para Excel
-    header("Content-Type: application/vnd.ms-excel");
-    header("Content-Disposition: attachment; filename=base_de_datos.xls");
-    header("Cache-Control: max-age=0");
-
-    echo '<html>';
-    echo '<head><meta charset="UTF-8"></head>';
-    echo '<body>';
-
     // Obtener todas las tablas
     $sql = "SHOW TABLES";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $tablas = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    // Crear una sección para cada tabla
-    foreach ($tablas as $tabla) {
-        // Título de la tabla
-        echo '<h3 style="text-align:left;">Tabla: ' . htmlspecialchars($tabla) . '</h3>';
+    // Nombre del archivo
+    $nombreArchivo = 'base_de_datos_exportada.csv';
 
-        // Iniciar tabla HTML
-        echo '<table border="1">';
-        echo '<tr><th colspan="100">Tabla: ' . htmlspecialchars($tabla) . '</th></tr>';
+    // Abrir salida como un archivo temporal
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename="' . $nombreArchivo . '"');
+    header('Cache-Control: max-age=0');
+
+    $output = fopen('php://output', 'w');
+
+    foreach ($tablas as $tabla) {
+        // Escribir el nombre de la tabla como encabezado
+        fputcsv($output, ["Tabla: $tabla"]);
 
         // Obtener los datos de la tabla
         $sql = "SELECT * FROM $tabla";
@@ -42,30 +38,22 @@ try {
 
         if (!empty($datos)) {
             // Escribir encabezados de columna
-            echo '<tr>';
-            foreach (array_keys($datos[0]) as $columna) {
-                echo '<th>' . htmlspecialchars($columna) . '</th>';
-            }
-            echo '</tr>';
+            fputcsv($output, array_keys($datos[0]));
 
             // Escribir los datos de la tabla
             foreach ($datos as $row) {
-                echo '<tr>';
-                foreach ($row as $cell) {
-                    echo '<td>' . htmlspecialchars($cell) . '</td>';
-                }
-                echo '</tr>';
+                fputcsv($output, $row);
             }
         } else {
-            echo '<tr><td colspan="100">La tabla está vacía.</td></tr>';
+            // Indicar que la tabla está vacía
+            fputcsv($output, ["La tabla $tabla no tiene datos."]);
         }
 
-        // Cerrar tabla
-        echo '</table><br>'; // Espacio entre tablas
+        // Espacio entre tablas
+        fputcsv($output, []);
     }
 
-    echo '</body>';
-    echo '</html>';
+    fclose($output);
     exit;
 } catch (PDOException $e) {
     die("Error en la conexión: " . $e->getMessage());
