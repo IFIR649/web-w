@@ -22,9 +22,9 @@ $tables = [
     'maestros' => 'SELECT * FROM maestros',
     'grupos' => 'SELECT * FROM grupos',
     'pago' => 'SELECT * FROM pago',
-    'idiomas' => 'SELECT * FROM idioma',
-    'niveles' => 'SELECT * FROM level',
-    'libros' => 'SELECT * FROM libro'
+    'idioma' => 'SELECT * FROM idioma',
+    'level' => 'SELECT * FROM level',
+    'libro' => 'SELECT * FROM libro'
 ];
 
 if ($type === 'todas') {
