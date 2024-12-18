@@ -1,5 +1,5 @@
 <?php
-include 'php/conexion.php'; // Conexión a la base de datos
+include 'php/conexion.php';
 
 // Manejar el estado solicitado
 $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_student'])) {
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/Nunito.css">
     <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="assets/js/query.js"></script>
 </head>
 
 <body id="page-top">
@@ -89,18 +89,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_student'])) {
                                    class="btn btn-warning btn-sm <?php echo $estado_filtro === 'inactivo' ? 'disabled' : ''; ?>">
                                     Inactivos
                                 </a>
+=======
+                                <a href="?estado=activo" class="btn btn-info btn-sm <?php echo $estado_filtro === 'activo' ? 'disabled' : ''; ?>">Activos</a>
+                                <a href="?estado=inactivo" class="btn btn-warning btn-sm <?php echo $estado_filtro === 'inactivo' ? 'disabled' : ''; ?>">Inactivos</a>
+>>>>>>> 0160614562c44bafe7414556a7ee269fbf35b367
                                 <a href="assets/crud/students/add-students.html" class="btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i> Agregar Estudiante
                                 </a>
+>>>>>>> a50bd5c9fcda2a094a25b83f9184db44d71901b4
                             </div>
                         </div>
-
-                        <!-- Barra de Búsqueda -->
+                        <!-- Campo de Búsqueda -->
+                        <div class="card-header py-3">
+                            <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar por nombre, matrícula o correo">
+                        </div>
                         <div class="card-body">
-                            <div class="mb-3">
-                                <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre, matrícula o correo...">
-                            </div>
-
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable">
                                     <thead>
@@ -113,8 +116,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_student'])) {
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="studentTableBody">
+                                    <tbody>
                                     <?php
+<<<<<<< HEAD
                                     $query = "SELECT matricula, CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) AS nombre_completo, correo, estado, fecha_inscripcion 
                                               FROM alumnos 
                                               WHERE estado = ?";
@@ -122,6 +126,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_student'])) {
                                     $stmt->bind_param("s", $estado_filtro);
                                     $stmt->execute();
                                     $result = $stmt->get_result();
+<<<<<<< HEAD
+
+                                    if ($result->num_rows > 0) {
+                                        while ($row = $result->fetch_assoc()) {
+                                            echo "<tr>
+                                                <td>{$row['matricula']}</td>
+                                                <td>{$row['nombre_completo']}</td>
+                                                <td>{$row['correo']}</td>
+                                                <td>{$row['estado']}</td>
+                                                <td>{$row['fecha_inscripcion']}</td>
+                                                <td>
+                                                    <a href='assets/crud/students/view-student.php?id={$row['matricula']}' class='btn btn-sm btn-info'>
+                                                        <i class='fas fa-eye'></i> Ver
+                                                    </a>
+                                                    <a href='assets/crud/students/edit-student.php?id={$row['matricula']}' class='btn btn-sm btn-warning'>
+                                                        <i class='fas fa-edit'></i> Editar
+                                                    </a>
+                                                    <button class='btn btn-sm btn-danger' onclick='deleteStudent({$row['matricula']})'>
+                                                        <i class='fas fa-trash-alt'></i> Eliminar
+                                                    </button>
+                                                </td>
+                                            </tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='6' class='text-center'>No hay estudiantes $estado_filtro registrados.</td></tr>";
+                                    }
+                                    $stmt->close();
+                                    $conn->close();
+                                    ?>
+=======
 
                                     if ($result->num_rows > 0) {
                                         while ($row = $result->fetch_assoc()) {
@@ -155,6 +189,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_student'])) {
                                     $stmt->close();
                                     $conn->close();
                                     ?>
+=======
+$query = "SELECT matricula, CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) AS nombre_completo, correo, estado, fecha_inscripcion 
+          FROM alumnos 
+          WHERE estado = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("s", $estado_filtro);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>
+            <td>{$row['matricula']}</td>
+            <td>{$row['nombre_completo']}</td>
+            <td>{$row['correo']}</td>
+            <td>{$row['estado']}</td>
+            <td>{$row['fecha_inscripcion']}</td>
+            <td>
+                <a href='assets/crud/students/view-student.php?id={$row['matricula']}' class='btn btn-sm btn-info'><i class='fas fa-eye'></i> Ver</a>
+                <a href='assets/crud/students/edit-student.php?id={$row['matricula']}' class='btn btn-sm btn-warning'><i class='fas fa-edit'></i> Editar</a>
+                <button class='btn btn-sm btn-danger' onclick='deleteStudent({$row['matricula']})'><i class='fas fa-trash-alt'></i> Eliminar</button>
+            </td>
+        </tr>";
+    }
+} else {
+    echo "<tr><td colspan='6' class='text-center'>No hay estudiantes $estado_filtro registrados.</td></tr>";
+}
+$stmt->close();
+$conn->close();
+?>
+>>>>>>> 0160614562c44bafe7414556a7ee269fbf35b367
                                     </tbody>
                                 </table>
                             </div>
@@ -170,6 +235,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_student'])) {
         </div>
     </div>
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+<<<<<<< HEAD
+=======
+    <script>
+        // Función para filtrar la tabla en tiempo real
+        document.getElementById("searchInput").addEventListener("input", function () {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll("#studentTableBody tr");
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? "" : "none";
+            });
+        });
+
+        function deleteStudent(id) {
+            const confirmDelete = confirm(`¿Seguro que deseas eliminar al estudiante con matrícula ${id}?`);
+            if (confirmDelete) {
+                window.location.href = `delete-student.php?id=${id}`;
+            }
+        }
+    </script>
+>>>>>>> 0160614562c44bafe7414556a7ee269fbf35b367
 </body>
 
 </html>
