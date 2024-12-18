@@ -11,9 +11,47 @@
 </head>
 
 <body id="page-top">
+    <?php
+    // Incluir la conexión a la base de datos
+    include 'php/conexion.php';
+
+    // Verificar si se envió la solicitud para eliminar
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_group'])) {
+        $groupId = intval($_POST['delete_group']);
+
+        // 1. Eliminar los registros relacionados en la tabla horarios
+        $querySchedules = "DELETE FROM horarios WHERE id_grupo = ?";
+        $stmtSchedules = $conn->prepare($querySchedules);
+        $stmtSchedules->bind_param('i', $groupId);
+        $stmtSchedules->execute();
+
+        // 2. Eliminar los registros relacionados en la tabla grupo_participantes
+        $queryParticipants = "DELETE FROM grupo_participantes WHERE id_grupo = ?";
+        $stmtParticipants = $conn->prepare($queryParticipants);
+        $stmtParticipants->bind_param('i', $groupId);
+        $stmtParticipants->execute();
+
+        // 3. Eliminar el grupo
+        $queryGroup = "DELETE FROM grupos WHERE id_grupo = ?";
+        $stmtGroup = $conn->prepare($queryGroup);
+        $stmtGroup->bind_param('i', $groupId);
+
+        if ($stmtGroup->execute()) {
+            echo "<script>alert('Grupo y sus registros relacionados eliminados exitosamente.'); window.location.href = 'groups.php';</script>";
+        } else {
+            echo "<script>alert('Error al eliminar el grupo.');</script>";
+        }
+
+        $stmtSchedules->close();
+        $stmtParticipants->close();
+        $stmtGroup->close();
+    }
+
+    $conn->close();
+    ?>
     <div id="wrapper">
         <div id="navbar-placeholder"></div>
-        <script src="assets/js/query.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             $(function () {
                 $("#navbar-placeholder").load("assets/navbar.html");
@@ -68,7 +106,7 @@
                                     </thead>
                                     <tbody>
                                         <?php
-                                        // Incluir la conexión
+                                        // Incluir conexión nuevamente para listar los grupos
                                         include 'php/conexion.php';
 
                                         // Consulta para obtener la información de grupos
@@ -91,15 +129,18 @@
                                                     <td>{$row['fecha_inicio']}</td>
                                                     <td>{$row['fecha_fin']}</td>
                                                     <td>
-                                                            <a href='assets/crud/groups/view-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-info'>
-                                                                <i class='fas fa-eye'></i> Ver
+                                                        <a href='assets/crud/groups/view-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-info'>
+                                                            <i class='fas fa-eye'></i> Ver
                                                         </a>
                                                         <a href='edit-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-warning'>
                                                             <i class='fas fa-edit'></i> Editar
                                                         </a>
-                                                        <a href='delete-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-danger' onclick='return confirm(\"¿Estás seguro de eliminar este grupo?\")'>
-                                                            <i class='fas fa-trash-alt'></i> Eliminar
-                                                        </a>
+                                                        <form method='POST' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de eliminar este grupo?\");'>
+                                                            <input type='hidden' name='delete_group' value='{$row['id_grupo']}'>
+                                                            <button type='submit' class='btn btn-sm btn-danger'>
+                                                                <i class='fas fa-trash-alt'></i> Eliminar
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>";
                                             }
