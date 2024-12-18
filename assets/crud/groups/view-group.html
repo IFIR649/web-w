@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Ver Grupo - Lingus</title>
+    <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/Nunito.css">
+    <link rel="stylesheet" href="../../fonts/fontawesome-all.min.css">
+    <style>
+        body {
+            background-color: #f4f4f9;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: #1f3c88;
+        }
+
+        .form-value {
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .btn-secondary {
+            background-color: #d3d3d3;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #b5b5b5;
+        }
+
+        .form-title {
+            text-align: center;
+            font-size: 1.6rem;
+            color: #1f3c88;
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+        // Cargar datos del grupo al iniciar
+        window.onload = async function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const groupId = urlParams.get("id");
+
+            if (!groupId) {
+                alert("No se proporcionó un ID de grupo.");
+                window.location.href = "../groups/index.html";
+                return;
+            }
+
+            try {
+                const response = await fetch(`../../backend/get-group.php?id=${groupId}`);
+                const groupData = await response.json();
+
+                // Rellenar los campos con los datos obtenidos
+                document.getElementById("num").textContent = groupData.num;
+                document.getElementById("costo_hora").textContent = `$${groupData.costo_hora}`;
+                document.getElementById("intensidad").textContent = groupData.intensidad;
+                document.getElementById("idioma").textContent = groupData.idioma || "No asignado";
+                document.getElementById("libro").textContent = groupData.libro || "No asignado";
+                document.getElementById("nivel").textContent = groupData.nivel || "No asignado";
+                document.getElementById("horas_tot").textContent = groupData.horas_tot + " horas";
+                document.getElementById("fecha_inicio").textContent = groupData.fecha_inicio;
+                document.getElementById("fecha_fin").textContent = groupData.fecha_fin;
+
+            } catch (error) {
+                alert("Error al cargar los datos del grupo.");
+                console.error(error);
+                window.location.href = "../groups/index.html";
+            }
+        };
+    </script>
+</head>
+
+<body>
+    <div class="form-container mt-5">
+        <h3 class="form-title">Detalles del Grupo</h3>
+        <div class="mb-3">
+            <label class="form-label">Número de Grupo:</label>
+            <p id="num" class="form-value"></p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Costo por Hora:</label>
+            <p id="costo_hora" class="form-value"></p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Intensidad:</label>
+            <p id="intensidad" class="form-value"></p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Idioma:</label>
+            <p id="idioma" class="form-value"></p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Libro:</label>
+            <p id="libro" class="form-value"></p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Nivel:</label>
+            <p id="nivel" class="form-value"></p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Horas Totales:</label>
+            <p id="horas_tot" class="form-value"></p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Fecha de Inicio:</label>
+            <p id="fecha_inicio" class="form-value"></p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Fecha de Fin:</label>
+            <p id="fecha_fin" class="form-value"></p>
+        </div>
+
+        <!-- Botón para regresar -->
+        <div class="text-end">
+            <a href="../groups/index.html" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <script src="../../bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
