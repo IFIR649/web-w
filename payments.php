@@ -1,3 +1,31 @@
+<?php
+include 'php/conexion.php'; // Incluir la conexión a la base de datos
+
+// Verificar si se envió la solicitud para eliminar
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_payment'])) {
+    $paymentId = intval($_POST['delete_payment']);
+
+    // Desactivar restricciones de claves foráneas
+    $conn->query("SET FOREIGN_KEY_CHECKS=0;");
+
+    // Eliminar el pago
+    $query = "DELETE FROM pago WHERE id_pago = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $paymentId);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Pago eliminado exitosamente.'); window.location.href = 'payments.php';</script>";
+    } else {
+        echo "<script>alert('Error al eliminar el pago.');</script>";
+    }
+
+    $stmt->close();
+
+    // Reactivar restricciones de claves foráneas
+    $conn->query("SET FOREIGN_KEY_CHECKS=1;");
+}
+?>
+
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
@@ -48,7 +76,9 @@
                     <div class="card shadow">
                         <div class="card-header py-3">
                             <p class="text-primary m-0 fw-bold">Lista de Pagos</p>
-                            <a class="btn btn-success btn-sm mt-2" href="add-payment.html"><i class="fas fa-plus"></i> Registrar Pago</a>
+                            <a class="btn btn-success btn-sm mt-2" href="add-payment.html">
+                                <i class="fas fa-plus"></i> Registrar Pago
+                            </a>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -65,9 +95,6 @@
                                     </thead>
                                     <tbody>
                                         <?php
-                                        // Incluir la conexión
-                                        include 'php/conexion.php';
-
                                         // Consulta para obtener la información de pagos
                                         $query = "SELECT p.id_pago, 
                                                          CONCAT(a.nombre, ' ', a.apellido_paterno, ' ', a.apellido_materno) AS alumno, 
@@ -95,9 +122,12 @@
                                                         <a href='edit-payment.php?id={$row['id_pago']}' class='btn btn-sm btn-warning'>
                                                             <i class='fas fa-edit'></i> Editar
                                                         </a>
-                                                        <a href='delete-payment.php?id={$row['id_pago']}' class='btn btn-sm btn-danger' onclick='return confirm(\"¿Estás seguro de eliminar este pago?\")'>
-                                                            <i class='fas fa-trash-alt'></i> Eliminar
-                                                        </a>
+                                                        <form method='POST' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de eliminar este pago?\");'>
+                                                            <input type='hidden' name='delete_payment' value='{$row['id_pago']}'>
+                                                            <button type='submit' class='btn btn-sm btn-danger'>
+                                                                <i class='fas fa-trash-alt'></i> Eliminar
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>";
                                             }
