@@ -135,6 +135,9 @@
                                                         <a href='assets/crud/groups/edit-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-warning'>
                                                             <i class='fas fa-edit'></i> Editar
                                                         </a>
+                                                        <a href='assets/crud/groups/edit-students.php?id={$row['id_grupo']}' class='btn btn-sm btn-primary'>
+                                                            <i class='fas fa-user-edit'></i> Editar Alumnos
+                                                        </a>
                                                         <form method='POST' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de eliminar este grupo?\");'>
                                                             <input type='hidden' name='delete_group' value='{$row['id_grupo']}'>
                                                             <button type='submit' class='btn btn-sm btn-danger'>
