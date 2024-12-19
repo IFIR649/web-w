@@ -1,3 +1,85 @@
+<?php
+include '../../../php/conexion.php'; // Cambia la ruta si es necesario
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    // Verificar si se proporciona el ID del maestro
+    if (isset($_GET['id'])) {
+        $id_maestro = intval($_GET['id']); // Sanitizar el ID del maestro
+
+        // Consultar los datos del maestro
+        $query = "SELECT id_maestro, nombre, apellido_paterno, apellido_materno, correo, horas_tot, certificado 
+                  FROM maestros 
+                  WHERE id_maestro = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('i', $id_maestro);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        // Verificar si se encontró al maestro
+        if ($result->num_rows > 0) {
+            $maestro = $result->fetch_assoc();
+        } else {
+            echo "<script>alert('Maestro no encontrado.'); window.location.href = '../../../teachers.php';</script>";
+            exit;
+        }
+        $stmt->close();
+    } else {
+        echo "<script>alert('No se proporcionó un ID válido.'); window.location.href = '../../../teachers.php';</script>";
+        exit;
+    }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Procesar la actualización del maestro
+    $id_maestro = $_POST['id_maestro'];
+    $nombre = $_POST['nombre'];
+    $apellido_paterno = $_POST['apellido_paterno'];
+    $apellido_materno = $_POST['apellido_materno'];
+    $correo = $_POST['correo'];
+    $horas_tot = $_POST['horas_tot'];
+    $certificado = $_POST['certificado'];
+
+    // Validar si el ID del maestro está presente
+    if (empty($id_maestro)) {
+        echo "<script>alert('ID de maestro no válido.'); window.history.back();</script>";
+        exit;
+    }
+
+    // Preparar la consulta de actualización
+    $query = "UPDATE maestros SET 
+                nombre = ?, 
+                apellido_paterno = ?, 
+                apellido_materno = ?, 
+                correo = ?, 
+                horas_tot = ?, 
+                certificado = ? 
+              WHERE id_maestro = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param(
+        "ssssdsi",
+        $nombre,
+        $apellido_paterno,
+        $apellido_materno,
+        $correo,
+        $horas_tot,
+        $certificado,
+        $id_maestro
+    );
+
+    // Ejecutar la consulta y verificar si fue exitosa
+    if ($stmt->execute()) {
+        echo "<script>alert('Maestro actualizado correctamente.'); window.location.href = '../../../teachers.php';</script>";
+    } else {
+        echo "<script>alert('Error al actualizar el maestro.'); window.history.back();</script>";
+    }
+
+    $stmt->close();
+    $conn->close();
+    exit;
+} else {
+    echo "<script>alert('Método de solicitud no válido.'); window.history.back();</script>";
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,124 +103,46 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
-        .form-label {
-            font-weight: bold;
-            color: #333;
-        }
-
-        .form-control {
-            border: none;
-            border-bottom: 2px solid #d0d0d0;
-            border-radius: 0;
-            box-shadow: none;
-        }
-
-        .form-control:focus {
-            border-color: #1f3c88;
-            box-shadow: none;
-        }
-
-        .btn-primary {
-            background-color: #1f3c88;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #1d2d50;
-        }
-
-        .btn-secondary {
-            background-color: #d3d3d3;
-            border: none;
-        }
-
-        .btn-secondary:hover {
-            background-color: #b5b5b5;
-        }
-
-        .form-title {
-            text-align: center;
-            font-size: 1.6rem;
-            color: #1f3c88;
-            margin-bottom: 20px;
-        }
     </style>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        // Función para cargar datos del maestro
-        async function loadTeacherData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const teacherId = urlParams.get("id");
-
-            if (!teacherId) {
-                alert("No se proporcionó un ID de maestro.");
-                window.location.href = "../teachers/index.html";
-                return;
-            }
-
-            try {
-                // Simulación de llamada al backend
-                const response = await fetch(`../../backend/get-teacher.php?id=${teacherId}`);
-                const teacherData = await response.json();
-
-                // Rellenar el formulario con los datos
-                document.getElementById("hiddenId").value = teacherData.id_maestro;
-                document.getElementById("nombre").value = teacherData.nombre;
-                document.getElementById("apellido_paterno").value = teacherData.apellido_paterno;
-                document.getElementById("apellido_materno").value = teacherData.apellido_materno || "";
-                document.getElementById("correo").value = teacherData.correo;
-                document.getElementById("horas_tot").value = teacherData.horas_tot;
-                document.getElementById("certificado").value = teacherData.certificado || "";
-            } catch (error) {
-                alert("Error al cargar los datos del maestro.");
-                console.error(error);
-                window.location.href = "../teachers/index.html";
-            }
-        }
-
-        // Cargar datos al iniciar la página
-        window.onload = loadTeacherData;
-    </script>
 </head>
 
 <body>
     <div class="form-container">
         <h3 class="form-title">Editar Maestro</h3>
-        <form id="editTeacherForm" action="../../backend/edit-teacher.php" method="POST">
+        <form id="editTeacherForm" action="" method="POST">
             <!-- ID Oculto -->
-            <input type="hidden" id="hiddenId" name="id_maestro">
+            <input type="hidden" id="hiddenId" name="id_maestro" value="<?php echo $maestro['id_maestro']; ?>">
 
             <!-- Nombre Completo -->
             <div class="mb-4">
                 <label for="nombre" class="form-label required">Nombre</label>
-                <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Nombre del maestro" required>
+                <input type="text" id="nombre" name="nombre" class="form-control" value="<?php echo $maestro['nombre']; ?>" required>
             </div>
             <div class="mb-4">
                 <label for="apellido_paterno" class="form-label required">Apellido Paterno</label>
-                <input type="text" id="apellido_paterno" name="apellido_paterno" class="form-control" placeholder="Apellido paterno" required>
+                <input type="text" id="apellido_paterno" name="apellido_paterno" class="form-control" value="<?php echo $maestro['apellido_paterno']; ?>" required>
             </div>
             <div class="mb-4">
                 <label for="apellido_materno" class="form-label">Apellido Materno</label>
-                <input type="text" id="apellido_materno" name="apellido_materno" class="form-control" placeholder="Apellido materno">
+                <input type="text" id="apellido_materno" name="apellido_materno" class="form-control" value="<?php echo $maestro['apellido_materno']; ?>">
             </div>
 
             <!-- Correo Electrónico -->
             <div class="mb-4">
                 <label for="correo" class="form-label required">Correo Electrónico</label>
-                <input type="email" id="correo" name="correo" class="form-control" placeholder="Correo del maestro" required>
+                <input type="email" id="correo" name="correo" class="form-control" value="<?php echo $maestro['correo']; ?>" required>
             </div>
 
             <!-- Horas Totales -->
             <div class="mb-4">
                 <label for="horas_tot" class="form-label required">Horas Totales</label>
-                <input type="number" id="horas_tot" name="horas_tot" class="form-control" placeholder="Ejemplo: 40" required>
+                <input type="number" id="horas_tot" name="horas_tot" class="form-control" value="<?php echo $maestro['horas_tot']; ?>" required>
             </div>
 
             <!-- Certificación -->
             <div class="mb-4">
                 <label for="certificado" class="form-label">Certificación</label>
-                <input type="text" id="certificado" name="certificado" class="form-control" placeholder="Ejemplo: TESOL, CELTA">
+                <input type="text" id="certificado" name="certificado" class="form-control" value="<?php echo $maestro['certificado']; ?>">
             </div>
 
             <!-- Botones -->
@@ -146,14 +150,12 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Guardar Cambios
                 </button>
-                <a href="../teachers/index.html" class="btn btn-secondary">
+                <a href="../../../teachers.php" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Cancelar
                 </a>
             </div>
         </form>
     </div>
-
-    <script src="../../bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

@@ -1,3 +1,36 @@
+<?php
+// Incluir conexión a la base de datos
+include '../../../php/conexion.php';
+
+// Verificar si se proporciona un ID válido
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    echo "<script>alert('ID de nivel no válido.'); window.location.href = '../../../levels.php';</script>";
+    exit;
+}
+
+$id_level = intval($_GET['id']);
+
+// Consultar los detalles del nivel
+$query = "SELECT l.cefr_level, l.name, l.modu, l.unite, b.nombre AS libro
+          FROM level l
+          LEFT JOIN libro b ON l.id_libro = b.id_libro
+          WHERE l.id_level = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param('i', $id_level);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $nivel = $result->fetch_assoc();
+} else {
+    echo "<script>alert('Nivel no encontrado.'); window.location.href = '../../../levels.php';</script>";
+    exit;
+}
+
+$stmt->close();
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -56,34 +89,6 @@
             margin-bottom: 20px;
         }
     </style>
-    <script>
-        window.onload = async function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const levelId = urlParams.get("id");
-
-            if (!levelId) {
-                alert("No se proporcionó un ID de nivel.");
-                window.location.href = "../levels/index.html";
-                return;
-            }
-
-            try {
-                const response = await fetch(`../../backend/get-level.php?id=${levelId}`);
-                const data = await response.json();
-
-                // Rellenar los datos en la página
-                document.getElementById("cefr_level").textContent = data.cefr_level || "N/A";
-                document.getElementById("name").textContent = data.name || "N/A";
-                document.getElementById("modu").textContent = data.modu || "N/A";
-                document.getElementById("unite").textContent = data.unite || "N/A";
-                document.getElementById("libro").textContent = data.libro || "N/A";
-            } catch (error) {
-                console.error(error);
-                alert("Error al cargar los datos del nivel.");
-                window.location.href = "../levels/index.html";
-            }
-        };
-    </script>
 </head>
 
 <body>
@@ -93,36 +98,36 @@
         <!-- CEFR Level -->
         <div class="mb-3">
             <label class="form-label">CEFR Level:</label>
-            <p id="cefr_level" class="form-value"></p>
+            <p class="form-value"><?php echo htmlspecialchars($nivel['cefr_level'] ?? 'N/A'); ?></p>
         </div>
 
         <!-- Nombre del Nivel -->
         <div class="mb-3">
             <label class="form-label">Nombre del Nivel:</label>
-            <p id="name" class="form-value"></p>
+            <p class="form-value"><?php echo htmlspecialchars($nivel['name'] ?? 'N/A'); ?></p>
         </div>
 
         <!-- Módulo -->
         <div class="mb-3">
             <label class="form-label">Módulo:</label>
-            <p id="modu" class="form-value"></p>
+            <p class="form-value"><?php echo htmlspecialchars($nivel['modu'] ?? 'N/A'); ?></p>
         </div>
 
         <!-- Unidades -->
         <div class="mb-3">
             <label class="form-label">Unidades:</label>
-            <p id="unite" class="form-value"></p>
+            <p class="form-value"><?php echo htmlspecialchars($nivel['unite'] ?? 'N/A'); ?></p>
         </div>
 
         <!-- Libro Relacionado -->
         <div class="mb-3">
             <label class="form-label">Libro:</label>
-            <p id="libro" class="form-value"></p>
+            <p class="form-value"><?php echo htmlspecialchars($nivel['libro'] ?? 'N/A'); ?></p>
         </div>
 
         <!-- Botón para regresar -->
         <div class="text-end mt-4">
-            <a href="../levels/index.html" class="btn btn-secondary">
+            <a href="../../../levels.php" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Volver
             </a>
         </div>

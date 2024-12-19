@@ -109,10 +109,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_level'])) {
                                                     <td>{$row['modu']}</td>
                                                     <td>{$row['unite']}</td>
                                                     <td>
-                                                        <a href='view-level.php?id={$row['id_level']}' class='btn btn-sm btn-info'>
+                                                        <a href='assets/crud/levels/view-level.php?id={$row['id_level']}' class='btn btn-sm btn-info'>
                                                             <i class='fas fa-eye'></i> Ver
                                                         </a>
-                                                        <a href='edit-level.php?id={$row['id_level']}' class='btn btn-sm btn-warning'>
+                                                        <a href='assets/crud/levels/edit-level.php?id={$row['id_level']}' class='btn btn-sm btn-warning'>
                                                             <i class='fas fa-edit'></i> Editar
                                                         </a>
                                                         <form method='POST' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de eliminar este nivel?\");'>
