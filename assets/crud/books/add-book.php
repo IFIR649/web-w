@@ -1,3 +1,25 @@
+<?php
+include '../../../php/conexion.php'; // Incluir la conexión a la base de datos
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre = $_POST['nombre'];
+
+    // Preparar la consulta SQL para insertar el libro
+    $query = "INSERT INTO libro (nombre) VALUES (?)";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('s', $nombre);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Libro agregado exitosamente.'); window.location.href = 'index.html';</script>";
+    } else {
+        echo "<script>alert('Error al agregar el libro.');</script>";
+    }
+
+    $stmt->close();
+    $conn->close();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -69,7 +91,7 @@
 <body>
     <div class="form-container mt-5">
         <h3 class="form-title">Agregar Nuevo Libro</h3>
-        <form action="../../backend/add-book.php" method="POST">
+        <form action="" method="POST">
             <!-- Nombre del Libro -->
             <div class="mb-4">
                 <label for="nombre" class="form-label required">Nombre del Libro</label>
@@ -81,7 +103,7 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Guardar
                 </button>
-                <a href="../books/index.html" class="btn btn-secondary">
+                <a href="index.html" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Cancelar
                 </a>
             </div>

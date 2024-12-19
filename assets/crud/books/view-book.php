@@ -72,6 +72,7 @@
                 const data = await response.json();
 
                 // Mostrar los datos del libro
+                console.log(data); // Agrega esto para depurar
                 document.getElementById("nombre").textContent = data.nombre || "No disponible";
             } catch (error) {
                 console.error(error);

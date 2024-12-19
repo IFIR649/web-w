@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_book'])) {
                     <div class="card shadow">
                         <div class="card-header py-3">
                             <p class="text-primary m-0 fw-bold">Lista de Libros</p>
-                            <a class="btn btn-success btn-sm mt-2" href="add-book.html">
+                            <a class="btn btn-success btn-sm mt-2" href="assets/crud/books/add-book.php">
                                 <i class="fas fa-plus"></i> Agregar Libro
                             </a>
                         </div>
@@ -103,12 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_book'])) {
                                                     <td>{$row['id_libro']}</td>
                                                     <td>{$row['nombre']}</td>
                                                     <td>
-                                                        <a href='view-book.php?id={$row['id_libro']}' class='btn btn-sm btn-info'>
-                                                            <i class='fas fa-eye'></i> Ver
-                                                        </a>
-                                                        <a href='edit-book.php?id={$row['id_libro']}' class='btn btn-sm btn-warning'>
-                                                            <i class='fas fa-edit'></i> Editar
-                                                        </a>
+
                                                         <form method='POST' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de eliminar este libro?\");'>
                                                             <input type='hidden' name='delete_book' value='{$row['id_libro']}'>
                                                             <button type='submit' class='btn btn-sm btn-danger'>
