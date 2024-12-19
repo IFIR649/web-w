@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param('s', $nombre);
 
     if ($stmt->execute()) {
-        echo "<script>alert('Libro agregado exitosamente.'); window.location.href = 'index.html';</script>";
+        echo "<script>alert('Libro agregado exitosamente.'); window.location.href = '../../../libros.php';</script>";
     } else {
         echo "<script>alert('Error al agregar el libro.');</script>";
     }
