@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $id_maestro = intval($_GET['id']); // Sanitizar el ID del maestro
 
         // Consultar los datos del maestro
-        $query = "SELECT id_maestro, nombre, apellido_paterno, apellido_materno, correo, horas_tot, certificado 
+        $query = "SELECT id_maestro, nombre, apellido_paterno, apellido_materno, correo, telefono, horas_tot, certificado 
                   FROM maestros 
                   WHERE id_maestro = ?";
         $stmt = $conn->prepare($query);
@@ -34,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $apellido_paterno = $_POST['apellido_paterno'];
     $apellido_materno = $_POST['apellido_materno'];
     $correo = $_POST['correo'];
+    $telefono = $_POST['telefono']; // Nuevo campo
     $horas_tot = $_POST['horas_tot'];
     $certificado = $_POST['certificado'];
 
@@ -49,16 +50,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 apellido_paterno = ?, 
                 apellido_materno = ?, 
                 correo = ?, 
+                telefono = ?, 
                 horas_tot = ?, 
                 certificado = ? 
               WHERE id_maestro = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param(
-        "ssssdsi",
+        "sssssisi",
         $nombre,
         $apellido_paterno,
         $apellido_materno,
         $correo,
+        $telefono,
         $horas_tot,
         $certificado,
         $id_maestro
@@ -131,6 +134,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             <div class="mb-4">
                 <label for="correo" class="form-label required">Correo Electrónico</label>
                 <input type="email" id="correo" name="correo" class="form-control" value="<?php echo $maestro['correo']; ?>" required>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="mb-4">
+                <label for="telefono" class="form-label required">Teléfono</label>
+                <input type="text" id="telefono" name="telefono" class="form-control" value="<?php echo $maestro['telefono']; ?>" required>
             </div>
 
             <!-- Horas Totales -->

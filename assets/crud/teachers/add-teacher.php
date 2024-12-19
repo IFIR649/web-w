@@ -6,13 +6,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $apellido_paterno = $_POST['apellido_paterno'];
     $apellido_materno = $_POST['apellido_materno'];
     $correo = $_POST['correo'];
+    $telefono = $_POST['telefono']; // Nuevo campo
     $horas_tot = intval($_POST['horas_tot']);
     $certificado = $_POST['certificado'];
 
     // Preparar la consulta SQL para insertar el maestro
-    $query = "INSERT INTO maestros (nombre, apellido_paterno, apellido_materno, correo, horas_tot, certificado) VALUES (?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO maestros (nombre, apellido_paterno, apellido_materno, correo, telefono, horas_tot, certificado) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param('ssssis', $nombre, $apellido_paterno, $apellido_materno, $correo, $horas_tot, $certificado);
+    $stmt->bind_param('sssssis', $nombre, $apellido_paterno, $apellido_materno, $correo, $telefono, $horas_tot, $certificado);
 
     if ($stmt->execute()) {
         echo "<script>alert('Maestro agregado exitosamente.'); window.location.href = '../../../teachers.php';</script>";
@@ -115,6 +116,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-4">
                 <label for="correo" class="form-label required">Correo Electrónico</label>
                 <input type="email" id="correo" name="correo" class="form-control" placeholder="Correo del maestro" required>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="mb-4">
+                <label for="telefono" class="form-label required">Teléfono</label>
+                <input type="text" id="telefono" name="telefono" class="form-control" placeholder="Teléfono del maestro" required>
             </div>
 
             <!-- Horas Totales -->

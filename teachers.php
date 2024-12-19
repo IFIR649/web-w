@@ -93,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_teacher'])) {
                                             <th>ID</th>
                                             <th>Nombre</th>
                                             <th>Correo</th>
+                                            <th>Teléfono</th>
                                             <th>Certificación</th>
                                             <th>Horas Totales</th>
                                             <th>Acciones</th>
@@ -102,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_teacher'])) {
                                         <?php
                                         // Consulta para obtener los datos de los maestros
                                         $query = "SELECT id_maestro, CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) AS nombre_completo, 
-                                                  correo, certificado, horas_tot FROM maestros";
+                                                  correo, telefono, certificado, horas_tot FROM maestros";
                                         $result = $conn->query($query);
 
                                         // Verificar si hay resultados
@@ -112,6 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_teacher'])) {
                                                     <td>{$row['id_maestro']}</td>
                                                     <td>{$row['nombre_completo']}</td>
                                                     <td>{$row['correo']}</td>
+                                                    <td>{$row['telefono']}</td>
                                                     <td>{$row['certificado']}</td>
                                                     <td>{$row['horas_tot']}</td>
                                                     <td>
@@ -131,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_teacher'])) {
                                                 </tr>";
                                             }
                                         } else {
-                                            echo "<tr><td colspan='6' class='text-center'>No hay maestros registrados.</td></tr>";
+                                            echo "<tr><td colspan='7' class='text-center'>No hay maestros registrados.</td></tr>";
                                         }
                                         $conn->close();
                                         ?>

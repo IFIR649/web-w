@@ -4,10 +4,27 @@ include '../../../php/conexion.php'; // Cambia la ruta si es necesario
 $pago = [];
 $pagos_totales = [];
 
+// Manejar eliminación de pago relacionado
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    $id_pago_total = intval($_POST['delete_id']);
+
+    // Eliminar el pago relacionado
+    $query_delete = "DELETE FROM pago_total WHERE id_pago_total = ?";
+    $stmt_delete = $conn->prepare($query_delete);
+    $stmt_delete->bind_param('i', $id_pago_total);
+
+    if ($stmt_delete->execute()) {
+        echo "<script>alert('Pago eliminado correctamente.'); window.location.href = window.location.href;</script>";
+    } else {
+        echo "<script>alert('Error al eliminar el pago.'); window.location.href = window.location.href;</script>";
+    }
+    $stmt_delete->close();
+}
+
+// Consultar detalles del pago principal
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     $id_pago = intval($_GET['id']); // Sanitizar el ID del pago
 
-    // Consultar los detalles del pago principal
     $query = "SELECT p.id_pago, p.monto, p.forma_pago, p.tipo_pago, 
                      CONCAT(a.nombre, ' ', a.apellido_paterno, ' ', a.apellido_materno) AS alumno 
               FROM pago p
@@ -22,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
         $pago = $result->fetch_assoc();
 
         // Consultar los pagos relacionados en pago_total
-        $query_totales = "SELECT fecha_pago, cantidad_pago 
+        $query_totales = "SELECT id_pago_total, fecha_pago, cantidad_pago 
                           FROM pago_total 
                           WHERE id_pago = ?";
         $stmt_totales = $conn->prepare($query_totales);
@@ -148,6 +165,7 @@ $conn->close();
                         <tr>
                             <th>Fecha del Pago</th>
                             <th>Monto del Pago</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -156,11 +174,19 @@ $conn->close();
                                 <tr>
                                     <td><?php echo $pago_total['fecha_pago']; ?></td>
                                     <td>$<?php echo number_format($pago_total['cantidad_pago'], 2); ?></td>
+                                    <td>
+                                        <form method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este pago?');" style="display:inline;">
+                                            <input type="hidden" name="delete_id" value="<?php echo $pago_total['id_pago_total']; ?>">
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash-alt"></i> Eliminar
+                                            </button>
+                                        </form>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="2" class="text-center">No hay pagos registrados.</td>
+                                <td colspan="3" class="text-center">No hay pagos registrados.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
