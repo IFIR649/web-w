@@ -1,3 +1,34 @@
+<?php
+include '../../../php/conexion.php'; // Cambia la ruta si es necesario
+
+// Verificar si se proporciona el ID de la matrícula
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
+    $matricula = $_GET['id'];
+
+    // Consultar los detalles del estudiante
+    $query = "SELECT matricula, CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) AS nombre_completo, correo, estado, fecha_inscripcion, num_alumno 
+              FROM alumnos 
+              WHERE matricula = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('s', $matricula);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $estudiante = $result->fetch_assoc();
+    } else {
+        echo "<script>alert('Estudiante no encontrado.'); window.location.href = '../../../students.php';</script>";
+        exit;
+    }
+
+    $stmt->close();
+    $conn->close();
+} else {
+    echo "<script>alert('No se proporcionó un ID válido.'); window.location.href = '../../../students.php';</script>";
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -50,43 +81,6 @@
             margin-bottom: 20px;
         }
     </style>
-    <script>
-        // Función para cargar datos del estudiante
-        function loadStudentDetails() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const studentId = urlParams.get("id");
-
-            if (!studentId) {
-                alert("No se proporcionó un ID de estudiante.");
-                window.location.href = "../students/index.html";
-            }
-
-            // Simulación: Datos cargados del backend
-            const studentData = {
-                matricula: "001",
-                nombre: "Juan",
-                apellido_paterno: "Pérez",
-                apellido_materno: "López",
-                correo: "juan.perez@example.com",
-                estado: "activo",
-                fecha_inscripcion: "2023-01-15",
-                num_alumno: "A12345",
-                idioma: "Inglés"
-            };
-
-            // Rellenar los datos
-            document.getElementById("matricula").textContent = studentData.matricula;
-            document.getElementById("nombre").textContent = `${studentData.nombre} ${studentData.apellido_paterno} ${studentData.apellido_materno}`;
-            document.getElementById("correo").textContent = studentData.correo || "No disponible";
-            document.getElementById("estado").textContent = studentData.estado === "activo" ? "Activo" : "Inactivo";
-            document.getElementById("fecha_inscripcion").textContent = studentData.fecha_inscripcion;
-            document.getElementById("num_alumno").textContent = studentData.num_alumno;
-            document.getElementById("idioma").textContent = studentData.idioma || "No asignado";
-        }
-
-        // Cargar datos al cargar la página
-        window.onload = loadStudentDetails;
-    </script>
 </head>
 
 <body>
@@ -94,35 +88,31 @@
         <h3 class="form-title">Detalles del Estudiante</h3>
         <div class="mb-3">
             <label class="form-label">Matrícula:</label>
-            <p id="matricula" class="form-control-plaintext"></p>
+            <p class="form-control-plaintext"><?php echo $estudiante['matricula']; ?></p>
         </div>
         <div class="mb-3">
             <label class="form-label">Nombre Completo:</label>
-            <p id="nombre" class="form-control-plaintext"></p>
+            <p class="form-control-plaintext"><?php echo $estudiante['nombre_completo']; ?></p>
         </div>
         <div class="mb-3">
             <label class="form-label">Correo Electrónico:</label>
-            <p id="correo" class="form-control-plaintext"></p>
+            <p class="form-control-plaintext"><?php echo $estudiante['correo'] ?? 'No disponible'; ?></p>
         </div>
         <div class="mb-3">
             <label class="form-label">Estado:</label>
-            <p id="estado" class="form-control-plaintext"></p>
+            <p class="form-control-plaintext"><?php echo $estudiante['estado'] === 'activo' ? 'Activo' : 'Inactivo'; ?></p>
         </div>
         <div class="mb-3">
             <label class="form-label">Fecha de Inscripción:</label>
-            <p id="fecha_inscripcion" class="form-control-plaintext"></p>
+            <p class="form-control-plaintext"><?php echo $estudiante['fecha_inscripcion']; ?></p>
         </div>
         <div class="mb-3">
             <label class="form-label">Número de Alumno:</label>
-            <p id="num_alumno" class="form-control-plaintext"></p>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Idioma:</label>
-            <p id="idioma" class="form-control-plaintext"></p>
+            <p class="form-control-plaintext"><?php echo $estudiante['num_alumno']; ?></p>
         </div>
 
         <div class="d-flex justify-content-end">
-            <a href="../students/index.html" class="btn btn-secondary">
+            <a href="../../../students.php" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Volver
             </a>
         </div>
