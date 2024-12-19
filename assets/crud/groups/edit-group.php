@@ -23,69 +23,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             exit;
         }
         $stmt->close();
+
+        // Consultar los horarios del grupo
+        $queryHorarios = "SELECT id_horario, dia_semana, hora_inicio, hora_fin FROM horarios WHERE id_grupo = ?";
+        $stmtHorarios = $conn->prepare($queryHorarios);
+        $stmtHorarios->bind_param('i', $id_grupo);
+        $stmtHorarios->execute();
+        $resultHorarios = $stmtHorarios->get_result();
+        $horarios = [];
+        while ($row = $resultHorarios->fetch_assoc()) {
+            $horarios[] = $row;
+        }
+        $stmtHorarios->close();
     } else {
         echo "<script>alert('No se proporcionó un ID válido.'); window.location.href = '../../../groups.php';</script>";
         exit;
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Procesar la actualización del grupo
-    $id_grupo = $_POST['id_grupo'];
-    $num = $_POST['num'];
-    $costo_hora = $_POST['costo_hora'];
+    $id_grupo = intval($_POST['id_grupo']);
+    $num = intval($_POST['num']);
+    $costo_hora = floatval($_POST['costo_hora']);
     $intensidad = $_POST['intensidad'];
-    $id_idioma = $_POST['id_idioma'];
-    $id_libro = $_POST['id_libro'];
-    $id_level = $_POST['id_level'];
-    $horas_tot = $_POST['horas_tot'];
+    $id_idioma = intval($_POST['id_idioma']);
+    $id_libro = intval($_POST['id_libro']);
+    $id_level = intval($_POST['id_level']);
+    $horas_tot = intval($_POST['horas_tot']);
     $fecha_inicio = $_POST['fecha_inicio'];
     $fecha_fin = $_POST['fecha_fin'];
 
-    // Validar si el ID del grupo está presente
-    if (empty($id_grupo)) {
-        echo "<script>alert('ID de grupo no válido.'); window.history.back();</script>";
-        exit;
-    }
-
-    // Preparar la consulta de actualización
-    $query = "UPDATE grupos SET 
-                num = ?, 
-                costo_hora = ?, 
-                intensidad = ?, 
-                id_idioma = ?, 
-                id_libro = ?, 
-                id_level = ?, 
-                horas_tot = ?, 
-                fecha_inicio = ?, 
-                fecha_fin = ? 
-              WHERE id_grupo = ?";
+    // Actualizar los datos del grupo
+    $query = "UPDATE grupos SET num = ?, costo_hora = ?, intensidad = ?, id_idioma = ?, id_libro = ?, id_level = ?, horas_tot = ?, fecha_inicio = ?, fecha_fin = ? WHERE id_grupo = ?";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param(
-        "dssiiiiisi",
-        $num,
-        $costo_hora,
-        $intensidad,
-        $id_idioma,
-        $id_libro,
-        $id_level,
-        $horas_tot,
-        $fecha_inicio,
-        $fecha_fin,
-        $id_grupo
-    );
+    $stmt->bind_param('issiiisssi', $num, $costo_hora, $intensidad, $id_idioma, $id_libro, $id_level, $horas_tot, $fecha_inicio, $fecha_fin, $id_grupo);
 
-    // Ejecutar la consulta y verificar si fue exitosa
     if ($stmt->execute()) {
-        echo "<script>alert('Grupo actualizado correctamente.'); window.location.href = '../../../groups.php';</script>";
+        // Eliminar los horarios existentes
+        $queryDeleteHorarios = "DELETE FROM horarios WHERE id_grupo = ?";
+        $stmtDeleteHorarios = $conn->prepare($queryDeleteHorarios);
+        $stmtDeleteHorarios->bind_param('i', $id_grupo);
+        $stmtDeleteHorarios->execute();
+        $stmtDeleteHorarios->close();
+
+        // Insertar los nuevos horarios
+        $dias_semana = $_POST['dia_semana'];
+        $horas_inicio = $_POST['hora_inicio'];
+        $horas_fin = $_POST['hora_fin'];
+
+        $query_horario = "INSERT INTO horarios (id_grupo, dia_semana, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)";
+        $stmt_horario = $conn->prepare($query_horario);
+
+        for ($i = 0; $i < count($dias_semana); $i++) {
+            $stmt_horario->bind_param('isss', $id_grupo, $dias_semana[$i], $horas_inicio[$i], $horas_fin[$i]);
+            $stmt_horario->execute();
+        }
+
+        $stmt_horario->close();
+        echo "<script>alert('Grupo y horarios actualizados exitosamente.'); window.location.href = '../../../groups.php';</script>";
     } else {
-        echo "<script>alert('Error al actualizar el grupo.'); window.history.back();</script>";
+        echo "<script>alert('Error al actualizar el grupo.');</script>";
     }
 
     $stmt->close();
     $conn->close();
-    exit;
-} else {
-    echo "<script>alert('Método de solicitud no válido.'); window.history.back();</script>";
-    exit;
 }
 ?>
 
@@ -112,6 +111,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
+        .form-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-control {
+            border: none;
+            border-bottom: 2px solid #d0d0d0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .form-control:focus {
+            border-color: #1f3c88;
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background-color: #1f3c88;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d2d50;
+        }
+
+        .btn-secondary {
+            background-color: #d3d3d3;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #b5b5b5;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .form-title {
+            text-align: center;
+            font-size: 1.6rem;
+            color: #1f3c88;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 
@@ -119,28 +169,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <div class="form-container mt-5">
         <h3 class="form-title">Editar Grupo</h3>
         <form id="editGroupForm" action="" method="POST">
-            <!-- ID del Grupo -->
-            <input type="hidden" name="id_grupo" value="<?php echo $grupo['id_grupo']; ?>">
+            <input type="hidden" name="id_grupo" value="<?php echo htmlspecialchars($grupo['id_grupo']); ?>">
 
             <!-- Número de Grupo -->
             <div class="mb-4">
                 <label for="num" class="form-label required">Número de Grupo</label>
-                <input type="number" id="num" name="num" class="form-control" value="<?php echo $grupo['num']; ?>" required>
+                <input type="number" id="num" name="num" class="form-control" value="<?php echo htmlspecialchars($grupo['num']); ?>" required>
             </div>
 
             <!-- Costo por Hora -->
             <div class="mb-4">
                 <label for="costo_hora" class="form-label required">Costo por Hora</label>
-                <input type="number" id="costo_hora" name="costo_hora" class="form-control" step="0.01" value="<?php echo $grupo['costo_hora']; ?>" required>
+                <input type="number" id="costo_hora" name="costo_hora" class="form-control" value="<?php echo htmlspecialchars($grupo['costo_hora']); ?>" step="0.01" required>
             </div>
 
             <!-- Intensidad -->
             <div class="mb-4">
                 <label for="intensidad" class="form-label required">Intensidad</label>
                 <select id="intensidad" name="intensidad" class="form-select" required>
-                    <option value="Baja" <?php echo $grupo['intensidad'] === 'Baja' ? 'selected' : ''; ?>>Baja</option>
-                    <option value="Media" <?php echo $grupo['intensidad'] === 'Media' ? 'selected' : ''; ?>>Media</option>
-                    <option value="Alta" <?php echo $grupo['intensidad'] === 'Alta' ? 'selected' : ''; ?>>Alta</option>
+                    <option value="">Seleccione</option>
+                    <option value="Baja" <?php echo $grupo['intensidad'] == 'Baja' ? 'selected' : ''; ?>>Baja</option>
+                    <option value="Media" <?php echo $grupo['intensidad'] == 'Media' ? 'selected' : ''; ?>>Media</option>
+                    <option value="Alta" <?php echo $grupo['intensidad'] == 'Alta' ? 'selected' : ''; ?>>Alta</option>
                 </select>
             </div>
 
@@ -148,6 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             <div class="mb-4">
                 <label for="id_idioma" class="form-label required">Idioma</label>
                 <select id="id_idioma" name="id_idioma" class="form-select" required>
+                    <option value="">Seleccione un idioma</option>
                     <option value="1" <?php echo $grupo['id_idioma'] == 1 ? 'selected' : ''; ?>>Inglés</option>
                     <option value="2" <?php echo $grupo['id_idioma'] == 2 ? 'selected' : ''; ?>>Francés</option>
                     <option value="3" <?php echo $grupo['id_idioma'] == 3 ? 'selected' : ''; ?>>Alemán</option>
@@ -158,6 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             <div class="mb-4">
                 <label for="id_libro" class="form-label required">Libro</label>
                 <select id="id_libro" name="id_libro" class="form-select" required>
+                    <option value="">Seleccione un libro</option>
                     <option value="1" <?php echo $grupo['id_libro'] == 1 ? 'selected' : ''; ?>>English Starter</option>
                     <option value="2" <?php echo $grupo['id_libro'] == 2 ? 'selected' : ''; ?>>Intermediate Guide</option>
                 </select>
@@ -167,6 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             <div class="mb-4">
                 <label for="id_level" class="form-label required">Nivel</label>
                 <select id="id_level" name="id_level" class="form-select" required>
+                    <option value="">Seleccione un nivel</option>
                     <option value="1" <?php echo $grupo['id_level'] == 1 ? 'selected' : ''; ?>>A1 - Beginner</option>
                     <option value="2" <?php echo $grupo['id_level'] == 2 ? 'selected' : ''; ?>>A2 - Elementary</option>
                     <option value="3" <?php echo $grupo['id_level'] == 3 ? 'selected' : ''; ?>>B1 - Intermediate</option>
@@ -176,23 +229,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             <!-- Horas Totales -->
             <div class="mb-4">
                 <label for="horas_tot" class="form-label required">Horas Totales</label>
-                <input type="number" id="horas_tot" name="horas_tot" class="form-control" value="<?php echo $grupo['horas_tot']; ?>" required>
+                <input type="number" id="horas_tot" name="horas_tot" class="form-control" value="<?php echo htmlspecialchars($grupo['horas_tot']); ?>" required>
             </div>
 
             <!-- Fechas -->
             <div class="mb-4">
                 <label for="fecha_inicio" class="form-label required">Fecha de Inicio</label>
-                <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" value="<?php echo $grupo['fecha_inicio']; ?>" required>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" value="<?php echo htmlspecialchars($grupo['fecha_inicio']); ?>" required>
             </div>
             <div class="mb-4">
                 <label for="fecha_fin" class="form-label required">Fecha de Fin</label>
-                <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" value="<?php echo $grupo['fecha_fin']; ?>" required>
+                <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" value="<?php echo htmlspecialchars($grupo['fecha_fin']); ?>" required>
+            </div>
+
+            <!-- Horarios -->
+            <div class="mb-4">
+                <label class="form-label required">Horarios</label>
+                <div id="horariosContainer">
+                    <?php foreach ($horarios as $horario): ?>
+                        <div class="d-flex mb-2 horario-item">
+                            <select name="dia_semana[]" class="form-select me-2" required>
+                                <option value="">Día de la semana</option>
+                                <option value="lunes" <?php echo $horario['dia_semana'] == 'lunes' ? 'selected' : ''; ?>>Lunes</option>
+                                <option value="martes" <?php echo $horario['dia_semana'] == 'martes' ? 'selected' : ''; ?>>Martes</option>
+                                <option value="miércoles" <?php echo $horario['dia_semana'] == 'miércoles' ? 'selected' : ''; ?>>Miércoles</option>
+                                <option value="jueves" <?php echo $horario['dia_semana'] == 'jueves' ? 'selected' : ''; ?>>Jueves</option>
+                                <option value="viernes" <?php echo $horario['dia_semana'] == 'viernes' ? 'selected' : ''; ?>>Viernes</option>
+                                <option value="sábado" <?php echo $horario['dia_semana'] == 'sábado' ? 'selected' : ''; ?>>Sábado</option>
+                                <option value="domingo" <?php echo $horario['dia_semana'] == 'domingo' ? 'selected' : ''; ?>>Domingo</option>
+                            </select>
+                            <input type="time" name="hora_inicio[]" class="form-control me-2" value="<?php echo htmlspecialchars($horario['hora_inicio']); ?>" required>
+                            <input type="time" name="hora_fin[]" class="form-control me-2" value="<?php echo htmlspecialchars($horario['hora_fin']); ?>" required>
+                            <button type="button" class="btn btn-danger" onclick="removeHorario(this)">Eliminar</button>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="addHorario()">Agregar Horario</button>
             </div>
 
             <!-- Botones -->
             <div class="d-flex justify-content-between">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Guardar Cambios
+                    <i class="fas fa-save"></i> Guardar
                 </button>
                 <a href="../../../groups.php" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Cancelar
@@ -200,6 +278,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             </div>
         </form>
     </div>
+
+    <script src="../../bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function addHorario() {
+            const container = document.getElementById('horariosContainer');
+            const div = document.createElement('div');
+            div.className = 'd-flex mb-2 horario-item';
+            div.innerHTML = `
+                <select name="dia_semana[]" class="form-select me-2" required>
+                    <option value="">Día de la semana</option>
+                    <option value="lunes">Lunes</option>
+                    <option value="martes">Martes</option>
+                    <option value="miércoles">Miércoles</option>
+                    <option value="jueves">Jueves</option>
+                    <option value="viernes">Viernes</option>
+                    <option value="sábado">Sábado</option>
+                    <option value="domingo">Domingo</option>
+                </select>
+                <input type="time" name="hora_inicio[]" class="form-control me-2" required>
+                <input type="time" name="hora_fin[]" class="form-control me-2" required>
+                <button type="button" class="btn btn-danger" onclick="removeHorario(this)">Eliminar</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeHorario(button) {
+            const div = button.parentElement;
+            div.remove();
+        }
+    </script>
 </body>
 
 </html>
