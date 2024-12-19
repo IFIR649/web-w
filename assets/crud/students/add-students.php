@@ -1,9 +1,8 @@
 <?php
-include '../../php/conexion.php'; // Incluir conexión a la base de datos
+include '../../../php/conexion.php'; // Cambia la ruta si es necesario
 
-// Verificar si el formulario se ha enviado
+// Manejar la solicitud POST para insertar datos
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $matricula = intval($_POST['hiddenMatricula']);
     $nombre = $_POST['nombre'];
     $apellido_paterno = $_POST['apellido_paterno'];
     $apellido_materno = $_POST['apellido_materno'];
@@ -11,47 +10,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $estado = $_POST['estado'];
     $fecha_inscripcion = $_POST['fecha_inscripcion'];
     $num_alumno = $_POST['num_alumno'];
-    $idioma = intval($_POST['idioma']);
 
-    // Actualizar los datos del estudiante en la base de datos
-    $query = "UPDATE alumnos 
-              SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, correo = ?, estado = ?, fecha_inscripcion = ?, num_alumno = ?, id_idioma = ? 
-              WHERE matricula = ?";
+    $query = "INSERT INTO alumnos (nombre, apellido_paterno, apellido_materno, correo, estado, fecha_inscripcion, num_alumno) 
+              VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param('sssssssii', $nombre, $apellido_paterno, $apellido_materno, $correo, $estado, $fecha_inscripcion, $num_alumno, $idioma, $matricula);
+    $stmt->bind_param("sssssss", $nombre, $apellido_paterno, $apellido_materno, $correo, $estado, $fecha_inscripcion, $num_alumno);
 
     if ($stmt->execute()) {
-        echo "<script>alert('Datos actualizados exitosamente.'); window.location.href = '../students/index.html';</script>";
-    } else {
-        echo "<script>alert('Error al actualizar los datos.');</script>";
-    }
-    $stmt->close();
-}
-
-// Verificar si se proporciona el ID del estudiante
-if (isset($_GET['id'])) {
-    $matricula = intval($_GET['id']); // Sanitizar el ID del estudiante
-
-    // Consultar los datos del estudiante
-    $query = "SELECT matricula, nombre, apellido_paterno, apellido_materno, correo, estado, fecha_inscripcion, num_alumno, id_idioma 
-              FROM alumnos 
-              WHERE matricula = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('i', $matricula);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    // Verificar si se encontró al estudiante
-    if ($result->num_rows > 0) {
-        $estudiante = $result->fetch_assoc();
-    } else {
-        echo "<script>alert('Estudiante no encontrado.'); window.location.href = '../students/index.html';</script>";
+        echo "<script>alert('Alumno agregado correctamente.'); window.location.href = '../../../students.php';</script>";
         exit;
+    } else {
+        $error = "Error al agregar el alumno. Por favor, intenta nuevamente.";
     }
+
     $stmt->close();
-} else {
-    echo "<script>alert('No se proporcionó un ID válido.'); window.location.href = '../students/index.html';</script>";
-    exit;
+    $conn->close();
 }
 ?>
 
@@ -61,7 +34,7 @@ if (isset($_GET['id'])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Editar Estudiante - Lingus</title>
+    <title>Agregar Alumno - Lingus</title>
     <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../css/Nunito.css">
     <link rel="stylesheet" href="../../fonts/fontawesome-all.min.css">
@@ -69,90 +42,121 @@ if (isset($_GET['id'])) {
         body {
             background-color: #f4f4f9;
         }
+
         .form-container {
-            max-width: 600px;
+            max-width: 700px;
             margin: auto;
             background: white;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
+        .form-label {
+            font-weight: bold;
+            color: #1f3c88;
+        }
+
+        .form-control {
+            border: none;
+            border-bottom: 2px solid #d0d0d0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .form-control:focus {
+            border-color: #1f3c88;
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background-color: #1f3c88;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d2d50;
+        }
+
+        .btn-secondary {
+            background-color: #d3d3d3;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #b5b5b5;
+        }
+
+        .form-title {
+            text-align: center;
+            font-size: 1.6rem;
+            color: #1f3c88;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 
 <body>
-    <div class="form-container">
-        <h3 class="form-title">Editar Estudiante</h3>
-        <form id="editStudentForm" method="POST">
-            <!-- Matrícula (Deshabilitada para edición) -->
-            <div class="mb-4">
-                <label for="matricula" class="form-label">Matrícula</label>
-                <input type="text" id="matricula" class="form-control" value="<?php echo $estudiante['matricula']; ?>" disabled>
-                <input type="hidden" id="hiddenMatricula" name="hiddenMatricula" value="<?php echo $estudiante['matricula']; ?>">
+    <div class="form-container mt-5">
+        <h3 class="form-title">Agregar Alumno</h3>
+        <?php if (isset($error)): ?>
+            <div class="alert alert-danger text-center">
+                <?php echo $error; ?>
             </div>
-
-            <!-- Nombre Completo -->
+        <?php endif; ?>
+        <form id="addStudentForm" method="POST">
+            <!-- Datos del Alumno -->
             <div class="mb-4">
-                <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" id="nombre" name="nombre" class="form-control" value="<?php echo $estudiante['nombre']; ?>" required>
+                <label for="nombre" class="form-label required">Nombre</label>
+                <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Nombre del alumno" required>
             </div>
             <div class="mb-4">
-                <label for="apellido_paterno" class="form-label">Apellido Paterno</label>
-                <input type="text" id="apellido_paterno" name="apellido_paterno" class="form-control" value="<?php echo $estudiante['apellido_paterno']; ?>" required>
+                <label for="apellido_paterno" class="form-label required">Apellido Paterno</label>
+                <input type="text" id="apellido_paterno" name="apellido_paterno" class="form-control" placeholder="Apellido paterno" required>
             </div>
             <div class="mb-4">
                 <label for="apellido_materno" class="form-label">Apellido Materno</label>
-                <input type="text" id="apellido_materno" name="apellido_materno" class="form-control" value="<?php echo $estudiante['apellido_materno']; ?>">
+                <input type="text" id="apellido_materno" name="apellido_materno" class="form-control" placeholder="Apellido materno">
             </div>
-
-            <!-- Correo Electrónico -->
             <div class="mb-4">
-                <label for="correo" class="form-label">Correo Electrónico</label>
-                <input type="email" id="correo" name="correo" class="form-control" value="<?php echo $estudiante['correo']; ?>">
+                <label for="correo" class="form-label required">Correo Electrónico</label>
+                <input type="email" id="correo" name="correo" class="form-control" placeholder="Correo del alumno" required>
             </div>
 
             <!-- Estado -->
             <div class="mb-4">
-                <label for="estado" class="form-label">Estado</label>
-                <select id="estado" name="estado" class="form-control" required>
-                    <option value="activo" <?php echo $estudiante['estado'] === 'activo' ? 'selected' : ''; ?>>Activo</option>
-                    <option value="inactivo" <?php echo $estudiante['estado'] === 'inactivo' ? 'selected' : ''; ?>>Inactivo</option>
+                <label for="estado" class="form-label required">Estado</label>
+                <select id="estado" name="estado" class="form-select" required>
+                    <option value="activo">Activo</option>
+                    <option value="inactivo">Inactivo</option>
                 </select>
             </div>
 
             <!-- Fecha de Inscripción -->
             <div class="mb-4">
-                <label for="fecha_inscripcion" class="form-label">Fecha de Inscripción</label>
-                <input type="date" id="fecha_inscripcion" name="fecha_inscripcion" class="form-control" value="<?php echo $estudiante['fecha_inscripcion']; ?>" required>
+                <label for="fecha_inscripcion" class="form-label required">Fecha de Inscripción</label>
+                <input type="date" id="fecha_inscripcion" name="fecha_inscripcion" class="form-control" required>
             </div>
 
             <!-- Número de Alumno -->
             <div class="mb-4">
-                <label for="num_alumno" class="form-label">Número de Alumno</label>
-                <input type="text" id="num_alumno" name="num_alumno" class="form-control" value="<?php echo $estudiante['num_alumno']; ?>" required>
-            </div>
-
-            <!-- Idioma -->
-            <div class="mb-4">
-                <label for="idioma" class="form-label">Idioma</label>
-                <select id="idioma" name="idioma" class="form-control">
-                    <option value="1" <?php echo $estudiante['id_idioma'] == 1 ? 'selected' : ''; ?>>Inglés</option>
-                    <option value="2" <?php echo $estudiante['id_idioma'] == 2 ? 'selected' : ''; ?>>Francés</option>
-                    <option value="3" <?php echo $estudiante['id_idioma'] == 3 ? 'selected' : ''; ?>>Alemán</option>
-                </select>
+                <label for="num_alumno" class="form-label required">Número de Alumno</label>
+                <input type="text" id="num_alumno" name="num_alumno" class="form-control" placeholder="Número único del alumno" required>
             </div>
 
             <!-- Botones -->
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between mt-4">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Guardar Cambios
+                    <i class="fas fa-save"></i> Guardar
                 </button>
-                <a href="../students/index.html" class="btn btn-secondary">
+                <a href="../../../students.php" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Cancelar
                 </a>
             </div>
         </form>
     </div>
+
+    <script src="../../bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
