@@ -86,8 +86,8 @@
                     <div class="card shadow">
                         <div class="card-header py-3">
                             <p class="text-primary m-0 fw-bold">Lista de Grupos</p>
-                            <a class="btn btn-success btn-sm mt-2" href="add-group.html"><i class="fas fa-plus"></i> Agregar Grupo</a>
-                            <a class="btn btn-primary btn-sm mt-2" href="exportar.php"><i class="fas fa-file-excel"></i> Exportar Base de Datos</a>
+                            <a class="btn btn-success btn-sm mt-2" href="assets/crud/groups/add-group.php"><i class="fas fa-plus"></i> Agregar Grupo</a>
+                            
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">

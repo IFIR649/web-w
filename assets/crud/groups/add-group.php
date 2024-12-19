@@ -1,3 +1,71 @@
+<?php
+include '../../../php/conexion.php'; // Incluir la conexión a la base de datos
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $num = $_POST['num'];
+    $costo_hora = $_POST['costo_hora'];
+    $intensidad = $_POST['intensidad'];
+    $id_idioma = $_POST['id_idioma'];
+    $id_libro = $_POST['id_libro'];
+    $id_level = $_POST['id_level'];
+    $horas_tot = $_POST['horas_tot'];
+    $fecha_inicio = $_POST['fecha_inicio'];
+    $fecha_fin = $_POST['fecha_fin'];
+
+    // Iniciar una transacción
+    $conn->begin_transaction();
+
+    try {
+        // Insertar el grupo
+        $stmt_grupo = $conn->prepare("INSERT INTO grupos (num, costo_hora, intensidad, id_idioma, id_libro, id_level, horas_tot, fecha_inicio, fecha_fin) 
+                                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt_grupo->bind_param("idsiiisss", $num, $costo_hora, $intensidad, $id_idioma, $id_libro, $id_level, $horas_tot, $fecha_inicio, $fecha_fin);
+        $stmt_grupo->execute();
+        $id_grupo = $conn->insert_id;
+
+        // Insertar horarios
+        $dias_semana = $_POST['dia_semana'];
+        $horas_inicio = $_POST['hora_inicio'];
+        $horas_fin = $_POST['hora_fin'];
+
+        $query_horario = "INSERT INTO horarios (id_grupo, dia_semana, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)";
+        $stmt_horario = $conn->prepare($query_horario);
+
+        for ($i = 0; $i < count($dias_semana); $i++) {
+            $stmt_horario->bind_param('isss', $id_grupo, $dias_semana[$i], $horas_inicio[$i], $horas_fin[$i]);
+            $stmt_horario->execute();
+        }
+
+        // Insertar participantes en grupo_participantes
+        if (!empty($_POST['participantes'])) {
+            $stmt_participante = $conn->prepare("INSERT INTO grupo_participantes (id_grupo, id_maestro, matricula) VALUES (?, ?, ?)");
+
+            foreach ($_POST['participantes'] as $participante) {
+                $id_maestro = intval($participante['id_maestro']);
+                $matricula = intval($participante['matricula']);
+                $stmt_participante->bind_param("iii", $id_grupo, $id_maestro, $matricula);
+                $stmt_participante->execute();
+            }
+
+            $stmt_participante->close();
+        }
+
+        // Confirmar la transacción
+        $conn->commit();
+        echo "<script>alert('Grupo, horarios y participantes agregados exitosamente.'); window.location.href = '../../../groups.php';</script>";
+    } catch (Exception $e) {
+        // Revertir la transacción en caso de error
+        $conn->rollback();
+        echo "<script>alert('Error al registrar los datos: " . $e->getMessage() . "');</script>";
+    }
+
+    $stmt_grupo->close();
+    $stmt_horario->close();
+}
+
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -57,6 +125,15 @@
             background-color: #b5b5b5;
         }
 
+        .btn-danger {
+            background-color: #dc3545;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
         .form-title {
             text-align: center;
             font-size: 1.6rem;
@@ -69,7 +146,7 @@
 <body>
     <div class="form-container mt-5">
         <h3 class="form-title">Agregar Nuevo Grupo</h3>
-        <form id="addGroupForm" action="../../backend/add-group.php" method="POST">
+        <form id="addGroupForm" action="" method="POST">
             <!-- Número de Grupo -->
             <div class="mb-4">
                 <label for="num" class="form-label required">Número de Grupo</label>
@@ -141,12 +218,30 @@
                 <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required>
             </div>
 
+            <!-- Horarios -->
+            <div class="mb-4">
+                <label class="form-label required">Horarios</label>
+                <div id="horariosContainer">
+                    <!-- Horarios se agregarán aquí -->
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="addHorario()">Agregar Horario</button>
+            </div>
+
+            <!-- Participantes -->
+            <div class="mb-4">
+                <label class="form-label required">Participantes</label>
+                <div id="participantesContainer">
+                    <!-- Participantes se agregarán aquí -->
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="addParticipante()">Agregar Participante</button>
+            </div>
+
             <!-- Botones -->
             <div class="d-flex justify-content-between">
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Guardar
                 </button>
-                <a href="../groups/index.html" class="btn btn-secondary">
+                <a href="../../../groups.php" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Cancelar
                 </a>
             </div>
@@ -154,6 +249,54 @@
     </div>
 
     <script src="../../bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function addHorario() {
+            const container = document.getElementById('horariosContainer');
+            const div = document.createElement('div');
+            div.className = 'd-flex mb-2 horario-item';
+            div.innerHTML = `
+                <select name="dia_semana[]" class="form-select me-2" required>
+                    <option value="">Día de la semana</option>
+                    <option value="lunes">Lunes</option>
+                    <option value="martes">Martes</option>
+                    <option value="miércoles">Miércoles</option>
+                    <option value="jueves">Jueves</option>
+                    <option value="viernes">Viernes</option>
+                    <option value="sábado">Sábado</option>
+                    <option value="domingo">Domingo</option>
+                </select>
+                <input type="time" name="hora_inicio[]" class="form-control me-2" required>
+                <input type="time" name="hora_fin[]" class="form-control me-2" required>
+                <button type="button" class="btn btn-danger" onclick="removeHorario(this)">Eliminar</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeHorario(button) {
+            const div = button.parentElement;
+            div.remove();
+        }
+
+        function addParticipante() {
+            const container = document.getElementById('participantesContainer');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'd-flex mb-2 participante-item';
+            div.innerHTML = `
+                <label>ID Maestro:</label>
+                <input type="number" name="participantes[${index}][id_maestro]" class="form-control me-2" required>
+                <label>Matrícula Alumno:</label>
+                <input type="number" name="participantes[${index}][matricula]" class="form-control me-2" required>
+                <button type="button" class="btn btn-danger" onclick="removeParticipante(this)">Eliminar</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeParticipante(button) {
+            const div = button.parentElement;
+            div.remove();
+        }
+    </script>
 </body>
 
 </html>

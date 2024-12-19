@@ -52,8 +52,7 @@
 
 <body>
     <?php
-    // Conexión a la base de datos
-    include '../../../php/conexion.php';
+    include '../../../php/conexion.php'; // Incluir la conexión a la base de datos
 
     // Verificar si se proporciona el ID del grupo
     if (!isset($_GET['id'])) {
@@ -85,7 +84,8 @@
     $stmtTeacher->bind_param('i', $groupId);
     $stmtTeacher->execute();
     $resultTeacher = $stmtTeacher->get_result();
-    $teacher = $resultTeacher->fetch_assoc()['nombre_completo'];
+    $teacher = $resultTeacher->fetch_assoc();
+    $teacherName = $teacher ? $teacher['nombre_completo'] : 'No asignado';
 
     // Obtener alumnos del grupo
     $queryStudents = "SELECT alumnos.matricula, CONCAT(alumnos.nombre, ' ', alumnos.apellido_paterno, ' ', alumnos.apellido_materno) AS nombre, alumnos.correo
@@ -97,13 +97,12 @@
     $stmtStudents->execute();
     $resultStudents = $stmtStudents->get_result();
 
-    // Obtener horario del grupo
+    // Obtener horarios del grupo
     $querySchedule = "SELECT dia_semana, hora_inicio, hora_fin FROM horarios WHERE id_grupo = ?";
     $stmtSchedule = $conn->prepare($querySchedule);
     $stmtSchedule->bind_param('i', $groupId);
     $stmtSchedule->execute();
     $resultSchedule = $stmtSchedule->get_result();
-    $schedule = $resultSchedule->fetch_assoc();
     ?>
     <div class="form-container mt-5">
         <h3 class="text-center text-primary mb-4">Detalles del Grupo</h3>
@@ -116,14 +115,29 @@
 
         <!-- Información del Maestro -->
         <h4 class="section-title">Maestro</h4>
-        <div class="mb-3"><strong>Nombre del Maestro:</strong> <?php echo htmlspecialchars($teacher); ?></div>
+        <div class="mb-3"><strong>Nombre del Maestro:</strong> <?php echo htmlspecialchars($teacherName); ?></div>
 
-        <!-- Horario -->
-        <h4 class="section-title">Horario</h4>
-        <div class="mb-3"><strong>Horario del Grupo:</strong> 
-            <?php echo htmlspecialchars($schedule['dia_semana']); ?> de 
-            <?php echo htmlspecialchars($schedule['hora_inicio']); ?> a 
-            <?php echo htmlspecialchars($schedule['hora_fin']); ?>
+        <!-- Horarios -->
+        <h4 class="section-title">Horarios</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Día de la Semana</th>
+                        <th>Hora de Inicio</th>
+                        <th>Hora de Fin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($schedule = $resultSchedule->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($schedule['dia_semana']); ?></td>
+                            <td><?php echo htmlspecialchars($schedule['hora_inicio']); ?></td>
+                            <td><?php echo htmlspecialchars($schedule['hora_fin']); ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
         </div>
 
         <!-- Alumnos del Grupo -->
@@ -151,7 +165,7 @@
 
         <!-- Botón para regresar -->
         <div class="text-end mt-4">
-            <a href="../groups/index.html" class="btn btn-secondary">
+            <a href="../../../groups.php" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Volver
             </a>
         </div>
