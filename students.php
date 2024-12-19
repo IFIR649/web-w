@@ -2,6 +2,23 @@
 // Incluir la conexión a la base de datos
 include 'php/conexion.php';
 
+// Manejar la eliminación del estudiante
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_student'])) {
+    $matricula = intval($_POST['delete_student']); // Sanitizar la entrada
+
+    $query_delete = "DELETE FROM alumnos WHERE matricula = ?";
+    $stmt_delete = $conn->prepare($query_delete);
+    $stmt_delete->bind_param("i", $matricula);
+
+    if ($stmt_delete->execute()) {
+        echo "<script>alert('Estudiante eliminado correctamente.'); window.location.href = 'students.php';</script>";
+    } else {
+        echo "<script>alert('Error al eliminar el estudiante.'); window.location.href = 'students.php';</script>";
+    }
+
+    $stmt_delete->close();
+}
+
 // Manejar el estado solicitado
 $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
 ?>
@@ -69,7 +86,7 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                                 <!-- Barra de Búsqueda -->
                                 <input type="text" id="searchInput" class="form-control form-control-sm d-inline-block" placeholder="Buscar...">
                                 <!-- Botón Agregar Estudiante -->
-                                <a href="assets/crud/students/add-students.html" class="btn btn-success btn-sm">
+                                <a href="assets/crud/students/add-students.php" class="btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i> Agregar Estudiante
                                 </a>
                             </div>
@@ -129,7 +146,6 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                                             echo "<tr><td colspan='6' class='text-center'>No hay estudiantes $estado_filtro registrados.</td></tr>";
                                         }
                                         $stmt->close();
-                                        $conn->close();
                                         ?>
                                     </tbody>
                                 </table>

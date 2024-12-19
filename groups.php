@@ -132,7 +132,7 @@
                                                         <a href='assets/crud/groups/view-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-info'>
                                                             <i class='fas fa-eye'></i> Ver
                                                         </a>
-                                                        <a href='edit-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-warning'>
+                                                        <a href='assets/crud/groups/edit-group.php?id={$row['id_grupo']}' class='btn btn-sm btn-warning'>
                                                             <i class='fas fa-edit'></i> Editar
                                                         </a>
                                                         <form method='POST' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de eliminar este grupo?\");'>
