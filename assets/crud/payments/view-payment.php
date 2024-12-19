@@ -1,15 +1,16 @@
 <?php
 include '../../../php/conexion.php'; // Cambia la ruta si es necesario
 
+$pago = [];
+$pagos_totales = [];
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     $id_pago = intval($_GET['id']); // Sanitizar el ID del pago
 
-    // Consultar los detalles del pago
+    // Consultar los detalles del pago principal
     $query = "SELECT p.id_pago, p.monto, p.forma_pago, p.tipo_pago, 
-                     pt.fecha_pago AS fecha_pago_total, pt.cantidad_pago, 
                      CONCAT(a.nombre, ' ', a.apellido_paterno, ' ', a.apellido_materno) AS alumno 
               FROM pago p
-              LEFT JOIN pago_total pt ON p.id_pago = pt.id_pago
               JOIN alumnos a ON p.matricula = a.matricula
               WHERE p.id_pago = ?";
     $stmt = $conn->prepare($query);
@@ -19,15 +20,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
 
     if ($result->num_rows > 0) {
         $pago = $result->fetch_assoc();
-        // Calcular el resto
-        $resto = $pago['monto'] - $pago['cantidad_pago'];
+
+        // Consultar los pagos relacionados en pago_total
+        $query_totales = "SELECT fecha_pago, cantidad_pago 
+                          FROM pago_total 
+                          WHERE id_pago = ?";
+        $stmt_totales = $conn->prepare($query_totales);
+        $stmt_totales->bind_param('i', $id_pago);
+        $stmt_totales->execute();
+        $result_totales = $stmt_totales->get_result();
+
+        while ($row = $result_totales->fetch_assoc()) {
+            $pagos_totales[] = $row;
+        }
+
+        // Calcular el total pagado y el resto
+        $total_pagado = array_sum(array_column($pagos_totales, 'cantidad_pago'));
+        $resto = $pago['monto'] - $total_pagado;
+
+        $pago['total_pagado'] = $total_pagado;
+        $pago['resto'] = $resto;
     } else {
-        $pago = ['error' => 'No se encontraron detalles para este pago.'];
+        $pago['error'] = 'No se encontraron detalles para este pago.';
     }
 
     $stmt->close();
+    $stmt_totales->close();
 } else {
-    $pago = ['error' => 'Solicitud no válida o falta de parámetros.'];
+    $pago['error'] = 'Solicitud no válida o falta de parámetros.';
 }
 
 $conn->close();
@@ -82,6 +102,15 @@ $conn->close();
         .btn-secondary:hover {
             background-color: #b5b5b5;
         }
+
+        .table {
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .table th {
+            color: #1f3c88;
+        }
     </style>
 </head>
 
@@ -98,21 +127,44 @@ $conn->close();
                 <div class="detail-value"><span class="detail-label">Forma de Pago:</span> <?php echo $pago['forma_pago']; ?></div>
                 <div class="detail-value"><span class="detail-label">Monto a Pagar:</span> $<?php echo number_format($pago['monto'], 2); ?></div>
                 <div class="detail-value"><span class="detail-label">Tipo de Pago:</span> <?php echo $pago['tipo_pago']; ?></div>
-                <div class="detail-value"><span class="detail-label">Fecha del Último Pago:</span> <?php echo $pago['fecha_pago_total'] ?? 'N/A'; ?></div>
                 <hr>
-                <div class="detail-value"><span class="detail-label">Cantidad Total Pagada:</span> $<?php echo number_format($pago['cantidad_pago'], 2); ?></div>
+                <div class="detail-value"><span class="detail-label">Total Pagado:</span> $<?php echo number_format($pago['total_pagado'], 2); ?></div>
                 <div class="detail-value">
                     <span class="detail-label">
-                        <?php if ($resto > 0): ?>
+                        <?php if ($pago['resto'] > 0): ?>
                             Monto Restante:
-                        <?php elseif ($resto < 0): ?>
+                        <?php elseif ($pago['resto'] < 0): ?>
                             Cambio:
                         <?php else: ?>
                             Pagado:
                         <?php endif; ?>
-                    </span> 
-                    $<?php echo number_format(abs($resto), 2); ?>
+                    </span>
+                    $<?php echo number_format(abs($pago['resto']), 2); ?>
                 </div>
+
+                <h4 class="details-title mt-4">Pagos Relacionados</h4>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Fecha del Pago</th>
+                            <th>Monto del Pago</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (count($pagos_totales) > 0): ?>
+                            <?php foreach ($pagos_totales as $pago_total): ?>
+                                <tr>
+                                    <td><?php echo $pago_total['fecha_pago']; ?></td>
+                                    <td>$<?php echo number_format($pago_total['cantidad_pago'], 2); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="2" class="text-center">No hay pagos registrados.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             <?php endif; ?>
         </div>
 
