@@ -1,3 +1,48 @@
+<?php
+include '../../../php/conexion.php'; // Cambia la ruta si es necesario
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $matricula = $_POST['matricula'];
+    $monto = $_POST['monto']; // Total que se debe pagar
+    $cantidad_pago = $_POST['cantidad_pago']; // Pago realizado
+    $forma_pago = $_POST['forma_pago'];
+    $tipo_pago = $_POST['tipo_pago'];
+    $fecha_pago = $_POST['fecha_pago'];
+
+    // Validar la matrícula ingresada
+    $query_check = "SELECT matricula FROM alumnos WHERE matricula = ?";
+    $stmt_check = $conn->prepare($query_check);
+    $stmt_check->bind_param('s', $matricula);
+    $stmt_check->execute();
+    $result_check = $stmt_check->get_result();
+
+    if ($result_check->num_rows > 0) {
+        // Insertar un nuevo registro en la tabla `pago`
+        $query_pago = "INSERT INTO pago (matricula, monto, forma_pago, tipo_pago) VALUES (?, ?, ?, ?)";
+        $stmt_pago = $conn->prepare($query_pago);
+        $stmt_pago->bind_param('sdss', $matricula, $monto, $forma_pago, $tipo_pago);
+        $stmt_pago->execute();
+        $id_pago = $stmt_pago->insert_id;
+
+        // Insertar un nuevo registro en la tabla `pago_total`
+        $query_pago_total = "INSERT INTO pago_total (id_pago, cantidad_pago, fecha_pago) VALUES (?, ?, ?)";
+        $stmt_pago_total = $conn->prepare($query_pago_total);
+        $stmt_pago_total->bind_param('ids', $id_pago, $cantidad_pago, $fecha_pago);
+        $stmt_pago_total->execute();
+
+        echo "<script>alert('Pago registrado correctamente.'); window.location.href = '../../../payments.php';</script>";
+    } else {
+        echo "<script>alert('La matrícula ingresada no existe.'); window.history.back();</script>";
+    }
+
+    $stmt_check->close();
+    $stmt_pago->close();
+    $stmt_pago_total->close();
+    $conn->close();
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -69,21 +114,25 @@
 <body>
     <div class="form-container mt-5">
         <h3 class="form-title">Agregar Pago Completo</h3>
-        <form id="addCompletePaymentForm" action="../../backend/add-complete-payment.php" method="POST">
-            <!-- Seleccionar Alumno -->
+        <form id="addCompletePaymentForm" action="" method="POST">
+            <!-- Ingresar Matrícula -->
             <div class="mb-4">
-                <label for="matricula" class="form-label required">Alumno</label>
-                <select id="matricula" name="matricula" class="form-select" required>
-                    <option value="">Seleccione un alumno</option>
-                    <!-- Alumnos cargados dinámicamente -->
-                </select>
+                <label for="matricula" class="form-label required">Matrícula del Alumno</label>
+                <input type="text" id="matricula" name="matricula" class="form-control" placeholder="Ingrese la matrícula del alumno" required>
             </div>
 
-            <!-- Pago Inicial -->
+            <!-- Pago Total -->
+            <h4 class="text-secondary">Detalles del Total</h4>
+            <div class="mb-4">
+                <label for="monto" class="form-label required">Monto (Total a Pagar)</label>
+                <input type="number" step="0.01" id="monto" name="monto" class="form-control" placeholder="Ejemplo: 5000.00" required>
+            </div>
+
+            <!-- Pago Realizado -->
             <h4 class="text-secondary">Detalles del Pago</h4>
             <div class="mb-4">
-                <label for="monto" class="form-label required">Monto</label>
-                <input type="number" step="0.01" id="monto" name="monto" class="form-control" placeholder="Ejemplo: 1500.50" required>
+                <label for="cantidad_pago" class="form-label required">Cantidad Pagada</label>
+                <input type="number" step="0.01" id="cantidad_pago" name="cantidad_pago" class="form-control" placeholder="Ejemplo: 1500.50" required>
             </div>
             <div class="mb-4">
                 <label for="forma_pago" class="form-label required">Forma de Pago</label>
@@ -97,13 +146,6 @@
                 <label for="tipo_pago" class="form-label required">Tipo de Pago</label>
                 <input type="text" id="tipo_pago" name="tipo_pago" class="form-control" placeholder="Ejemplo: Inscripción, Mensualidad" required>
             </div>
-
-            <!-- Pago Total -->
-            <h4 class="text-secondary">Detalles del Total</h4>
-            <div class="mb-4">
-                <label for="cantidad_pago" class="form-label required">Cantidad Total</label>
-                <input type="number" step="0.01" id="cantidad_pago" name="cantidad_pago" class="form-control" placeholder="Ejemplo: 5000.00" required>
-            </div>
             <div class="mb-4">
                 <label for="fecha_pago" class="form-label required">Fecha de Pago</label>
                 <input type="date" id="fecha_pago" name="fecha_pago" class="form-control" required>
@@ -114,7 +156,7 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Guardar
                 </button>
-                <a href="../payments/index.html" class="btn btn-secondary">
+                <a href="../../../payments.php" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Cancelar
                 </a>
             </div>
@@ -122,28 +164,6 @@
     </div>
 
     <script src="../../bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Cargar alumnos dinámicamente desde el backend
-        async function loadStudents() {
-            try {
-                const response = await fetch('../../backend/list-students.php');
-                const students = await response.json();
-                const select = document.getElementById('matricula');
-
-                students.forEach(student => {
-                    const option = document.createElement('option');
-                    option.value = student.matricula;
-                    option.textContent = `${student.matricula} - ${student.nombre_completo}`;
-                    select.appendChild(option);
-                });
-            } catch (error) {
-                console.error('Error al cargar los estudiantes:', error);
-            }
-        }
-
-        // Cargar al iniciar la página
-        window.onload = loadStudents;
-    </script>
 </body>
 
 </html>

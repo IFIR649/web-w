@@ -76,7 +76,7 @@
                     <div class="card shadow">
                         <div class="card-header py-3">
                             <p class="text-primary m-0 fw-bold">Lista de Idiomas</p>
-                            <a class="btn btn-success btn-sm mt-2" href="add-language.html">
+                            <a class="btn btn-success btn-sm mt-2" href="assets/crud/lenguages/add-lenguage.php">
                                 <i class="fas fa-plus"></i> Agregar Idioma
                             </a>
                         </div>
@@ -103,12 +103,7 @@
                                                     <td>{$row['id_idioma']}</td>
                                                     <td>{$row['nombre']}</td>
                                                     <td>
-                                                        <a href='view-language.php?id={$row['id_idioma']}' class='btn btn-sm btn-info'>
-                                                            <i class='fas fa-eye'></i> Ver
-                                                        </a>
-                                                        <a href='edit-language.php?id={$row['id_idioma']}' class='btn btn-sm btn-warning'>
-                                                            <i class='fas fa-edit'></i> Editar
-                                                        </a>
+                                                      
                                                         <form method='POST' style='display:inline;' onsubmit='return confirm(\"¿Estás seguro de eliminar este idioma?\");'>
                                                             <input type='hidden' name='delete_language' value='{$row['id_idioma']}'>
                                                             <button type='submit' class='btn btn-sm btn-danger'>

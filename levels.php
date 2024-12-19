@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_level'])) {
                     <div class="card shadow">
                         <div class="card-header py-3">
                             <p class="text-primary m-0 fw-bold">Lista de Niveles</p>
-                            <a class="btn btn-success btn-sm mt-2" href="add-level.html">
+                            <a class="btn btn-success btn-sm mt-2" href="assets/crud/levels/add-level.php">
                                 <i class="fas fa-plus"></i> Agregar Nivel
                             </a>
                         </div>
