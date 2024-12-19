@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_payment'])) {
                     <div class="card shadow">
                         <div class="card-header py-3">
                             <p class="text-primary m-0 fw-bold">Lista de Pagos</p>
-                            <a class="btn btn-success btn-sm mt-2" href="add-payment.html">
+                            <a class="btn btn-success btn-sm mt-2" href="assets/crud/payments/add-payment.php">
                                 <i class="fas fa-plus"></i> Registrar Pago
                             </a>
                         </div>
