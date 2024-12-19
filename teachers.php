@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_teacher'])) {
                             <p class="text-primary m-0 fw-bold">Lista de Maestros</p>
                             <div>
                                 <input type="text" id="searchInput" class="form-control form-control-sm d-inline-block" placeholder="Buscar...">
-                                <a href="add-teacher.html" class="btn btn-success btn-sm mt-2">
+                                <a href="assets/crud/teachers/add-teacher.php" class="btn btn-success btn-sm mt-2">
                                     <i class="fas fa-plus"></i> Agregar Maestro
                                 </a>
                             </div>
@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_teacher'])) {
                                                     <td>{$row['certificado']}</td>
                                                     <td>{$row['horas_tot']}</td>
                                                     <td>
-                                                        <a href='view-teacher.php?id={$row['id_maestro']}' class='btn btn-sm btn-info'>
+                                                        <a href='assets/crud/teachers/view-teacher.php?id={$row['id_maestro']}' class='btn btn-sm btn-info'>
                                                             <i class='fas fa-eye'></i> Ver
                                                         </a>
                                                         <a href='assets/crud/teachers/edit-teacher.php?id={$row['id_maestro']}' class='btn btn-sm btn-warning'>

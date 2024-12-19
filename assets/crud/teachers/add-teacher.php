@@ -1,3 +1,30 @@
+<?php
+include '../../../php/conexion.php'; // Incluir la conexión a la base de datos
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre = $_POST['nombre'];
+    $apellido_paterno = $_POST['apellido_paterno'];
+    $apellido_materno = $_POST['apellido_materno'];
+    $correo = $_POST['correo'];
+    $horas_tot = intval($_POST['horas_tot']);
+    $certificado = $_POST['certificado'];
+
+    // Preparar la consulta SQL para insertar el maestro
+    $query = "INSERT INTO maestros (nombre, apellido_paterno, apellido_materno, correo, horas_tot, certificado) VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('ssssis', $nombre, $apellido_paterno, $apellido_materno, $correo, $horas_tot, $certificado);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Maestro agregado exitosamente.'); window.location.href = '../../../teachers.php';</script>";
+    } else {
+        echo "<script>alert('Error al agregar el maestro.');</script>";
+    }
+
+    $stmt->close();
+    $conn->close();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -69,7 +96,7 @@
 <body>
     <div class="form-container">
         <h3 class="form-title">Agregar Nuevo Maestro</h3>
-        <form id="addTeacherForm" action="../../backend/add-teacher.php" method="POST">
+        <form id="addTeacherForm" action="" method="POST">
             <!-- Nombre Completo -->
             <div class="mb-4">
                 <label for="nombre" class="form-label required">Nombre</label>
@@ -107,7 +134,7 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Guardar
                 </button>
-                <a href="../teachers/index.html" class="btn btn-secondary">
+                <a href="../../../teachers.php" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Cancelar
                 </a>
             </div>

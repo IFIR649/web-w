@@ -1,3 +1,31 @@
+<?php
+include '../../../php/conexion.php'; // Incluir la conexión a la base de datos
+
+if (isset($_GET['id'])) {
+    $teacherId = intval($_GET['id']);
+
+    // Preparar la consulta SQL para obtener los detalles del maestro
+    $query = "SELECT id_maestro, nombre, apellido_paterno, apellido_materno, correo, horas_tot, certificado FROM maestros WHERE id_maestro = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $teacherId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $teacher = $result->fetch_assoc();
+    } else {
+        echo "<script>alert('Maestro no encontrado.'); window.location.href = '../../../teachers.php';</script>";
+        exit();
+    }
+
+    $stmt->close();
+    $conn->close();
+} else {
+    echo "<script>alert('ID de maestro no proporcionado.'); window.location.href = '../../../teachers.php';</script>";
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -24,14 +52,12 @@
 
         .form-label {
             font-weight: bold;
-            color: #333;
+            color: #1f3c88;
         }
 
-        .form-control-plaintext {
-            border: none;
-            padding: 0;
-            color: #1f3c88;
-            font-weight: 600;
+        .form-value {
+            font-size: 1.1rem;
+            color: #333;
         }
 
         .btn-secondary {
@@ -50,68 +76,41 @@
             margin-bottom: 20px;
         }
     </style>
-    <script>
-        // Función para cargar los detalles del maestro
-        async function loadTeacherDetails() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const teacherId = urlParams.get("id");
-
-            if (!teacherId) {
-                alert("No se proporcionó un ID de maestro.");
-                window.location.href = "../teachers/index.html";
-                return;
-            }
-
-            try {
-                // Simulación de llamada al backend
-                const response = await fetch(`../../backend/get-teacher.php?id=${teacherId}`);
-                const teacherData = await response.json();
-
-                // Rellenar los campos con los datos
-                document.getElementById("id_maestro").textContent = teacherData.id_maestro;
-                document.getElementById("nombre").textContent = `${teacherData.nombre} ${teacherData.apellido_paterno} ${teacherData.apellido_materno}`;
-                document.getElementById("correo").textContent = teacherData.correo || "No disponible";
-                document.getElementById("horas_tot").textContent = teacherData.horas_tot || "N/A";
-                document.getElementById("certificado").textContent = teacherData.certificado || "Sin certificación";
-            } catch (error) {
-                alert("Error al cargar los datos del maestro.");
-                console.error(error);
-                window.location.href = "../teachers/index.html";
-            }
-        }
-
-        // Cargar datos al iniciar la página
-        window.onload = loadTeacherDetails;
-    </script>
 </head>
 
 <body>
-    <div class="form-container">
+    <div class="form-container mt-5">
         <h3 class="form-title">Detalles del Maestro</h3>
+
+        <!-- Detalles del Maestro -->
         <div class="mb-3">
-            <label class="form-label">ID:</label>
-            <p id="id_maestro" class="form-control-plaintext"></p>
+            <label class="form-label">Nombre:</label>
+            <p class="form-value"><?php echo htmlspecialchars($teacher['nombre']); ?></p>
         </div>
         <div class="mb-3">
-            <label class="form-label">Nombre Completo:</label>
-            <p id="nombre" class="form-control-plaintext"></p>
+            <label class="form-label">Apellido Paterno:</label>
+            <p class="form-value"><?php echo htmlspecialchars($teacher['apellido_paterno']); ?></p>
         </div>
         <div class="mb-3">
-            <label class="form-label">Correo Electrónico:</label>
-            <p id="correo" class="form-control-plaintext"></p>
+            <label class="form-label">Apellido Materno:</label>
+            <p class="form-value"><?php echo htmlspecialchars($teacher['apellido_materno']); ?></p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Correo:</label>
+            <p class="form-value"><?php echo htmlspecialchars($teacher['correo']); ?></p>
         </div>
         <div class="mb-3">
             <label class="form-label">Horas Totales:</label>
-            <p id="horas_tot" class="form-control-plaintext"></p>
+            <p class="form-value"><?php echo htmlspecialchars($teacher['horas_tot']); ?></p>
         </div>
         <div class="mb-3">
-            <label class="form-label">Certificación:</label>
-            <p id="certificado" class="form-control-plaintext"></p>
+            <label class="form-label">Certificado:</label>
+            <p class="form-value"><?php echo htmlspecialchars($teacher['certificado']); ?></p>
         </div>
 
-        <!-- Botón para volver -->
-        <div class="d-flex justify-content-end">
-            <a href="../teachers/index.html" class="btn btn-secondary">
+        <!-- Botón para regresar -->
+        <div class="text-end mt-4">
+            <a href="../../../teachers.php" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Volver
             </a>
         </div>
