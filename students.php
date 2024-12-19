@@ -101,13 +101,16 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                                             <th>Correo</th>
                                             <th>Estado</th>
                                             <th>Fecha Inscripción</th>
+                                            <?php if ($estado_filtro === 'inactivo'): ?>
+                                                <th>Fecha de Baja</th>
+                                            <?php endif; ?>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
                                         // Consulta para obtener los datos de los estudiantes
-                                        $query = "SELECT matricula, CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) AS nombre_completo, correo, estado, fecha_inscripcion 
+                                        $query = "SELECT matricula, CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) AS nombre_completo, correo, estado, fecha_inscripcion, fecha_baja 
                                                   FROM alumnos 
                                                   WHERE estado = ?";
                                         $stmt = $conn->prepare($query);
@@ -122,8 +125,11 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                                                     <td>{$row['nombre_completo']}</td>
                                                     <td>{$row['correo']}</td>
                                                     <td>{$row['estado']}</td>
-                                                    <td>{$row['fecha_inscripcion']}</td>
-                                                    <td>
+                                                    <td>{$row['fecha_inscripcion']}</td>";
+                                                if ($estado_filtro === 'inactivo') {
+                                                    echo "<td>{$row['fecha_baja']}</td>";
+                                                }
+                                                echo "<td>
                                                         <!-- Botón Ver -->
                                                         <a href='assets/crud/students/view-student.php?id={$row['matricula']}' class='btn btn-sm btn-info'>
                                                             <i class='fas fa-eye'></i> Ver
@@ -143,9 +149,10 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                                                 </tr>";
                                             }
                                         } else {
-                                            echo "<tr><td colspan='6' class='text-center'>No hay estudiantes $estado_filtro registrados.</td></tr>";
+                                            echo "<tr><td colspan='7' class='text-center'>No hay estudiantes $estado_filtro registrados.</td></tr>";
                                         }
                                         $stmt->close();
+                                        $conn->close();
                                         ?>
                                     </tbody>
                                 </table>
