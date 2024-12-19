@@ -75,15 +75,18 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <p class="text-primary m-0 fw-bold">Lista de Estudiantes</p>
                             <div>
-                                <a href="?estado=activo" 
-                                   class="btn btn-info btn-sm <?php echo $estado_filtro === 'activo' ? 'disabled' : ''; ?>">
+                                <!-- Botón Filtrar Activos -->
+                                <a href="?estado=activo" class="btn btn-info btn-sm <?php echo $estado_filtro === 'activo' ? 'disabled' : ''; ?>">
                                     Activos
                                 </a>
                                 <!-- Botón Filtrar Inactivos -->
                                 <a href="?estado=inactivo" class="btn btn-warning btn-sm <?php echo $estado_filtro === 'inactivo' ? 'disabled' : ''; ?>">
                                     Inactivos
                                 </a>
-                                <a href="assets/crud/students/add-students.html" class="btn btn-success btn-sm">
+                                <!-- Barra de Búsqueda -->
+                                <input type="text" id="searchInput" class="form-control form-control-sm d-inline-block" placeholder="Buscar...">
+                                <!-- Botón Agregar Estudiante -->
+                                <a href="assets/crud/students/add-students.php" class="btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i> Agregar Estudiante
                                 </a>
                             </div>
@@ -101,17 +104,6 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
-<<<<<<< HEAD
-                                    <tbody id="studentTableBody">
-                                    <?php
-                                    $query = "SELECT matricula, CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) AS nombre_completo, correo, estado, fecha_inscripcion 
-                                              FROM alumnos 
-                                              WHERE estado = ?";
-                                    $stmt = $conn->prepare($query);
-                                    $stmt->bind_param("s", $estado_filtro);
-                                    $stmt->execute();
-                                    $result = $stmt->get_result();
-=======
                                     <tbody>
                                         <?php
                                         // Consulta para obtener los datos de los estudiantes
@@ -122,7 +114,6 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                                         $stmt->bind_param("s", $estado_filtro);
                                         $stmt->execute();
                                         $result = $stmt->get_result();
->>>>>>> 29b10e083fe509754a8eb95017aeda7bc9318808
 
                                         if ($result->num_rows > 0) {
                                             while ($row = $result->fetch_assoc()) {
@@ -154,12 +145,8 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
                                         } else {
                                             echo "<tr><td colspan='6' class='text-center'>No hay estudiantes $estado_filtro registrados.</td></tr>";
                                         }
-                                    } else {
-                                        echo "<tr><td colspan='6' class='text-center'>No hay estudiantes $estado_filtro registrados.</td></tr>";
-                                    }
-                                    $stmt->close();
-                                    $conn->close();
-                                    ?>
+                                        $stmt->close();
+                                        ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -175,8 +162,6 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
         </div>
     </div>
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
-<<<<<<< HEAD
-=======
     <script>
         // Filtrado de búsqueda dinámica
         document.getElementById("searchInput").addEventListener("input", function () {
@@ -191,7 +176,6 @@ $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : 'activo';
             });
         });
     </script>
->>>>>>> 29b10e083fe509754a8eb95017aeda7bc9318808
 </body>
 
 </html>
