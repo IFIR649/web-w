@@ -1,10 +1,40 @@
 <?php
 include '../../../php/conexion.php'; // Incluir la conexión a la base de datos
+// Consultar idiomas
+$queryIdiomas = "SELECT id_idioma, nombre FROM idioma";
+$resultIdiomas = $conn->query($queryIdiomas);
+$idiomas = [];
+if ($resultIdiomas->num_rows > 0) {
+    while ($row = $resultIdiomas->fetch_assoc()) {
+        $idiomas[] = $row;
+    }
+}
+
+// Consultar libros
+$queryLibros = "SELECT id_libro, nombre FROM libro";
+$resultLibros = $conn->query($queryLibros);
+$libros = [];
+if ($resultLibros->num_rows > 0) {
+    while ($row = $resultLibros->fetch_assoc()) {
+        $libros[] = $row;
+    }
+}
+
+// Consultar niveles
+$queryNiveles = "SELECT id_level, nombre FROM level";
+$resultNiveles = $conn->query($queryNiveles);
+$niveles = [];
+if ($resultNiveles->num_rows > 0) {
+    while ($row = $resultNiveles->fetch_assoc()) {
+        $niveles[] = $row;
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Capturar datos del formulario
     $num = $_POST['num'];
     $costo_hora = $_POST['costo_hora'];
-    $intensidad = $_POST['intensidad'];
+    $intensidad = $_POST['intensidad']; // Capturar intensidad manualmente
     $id_idioma = $_POST['id_idioma'];
     $id_libro = $_POST['id_libro'];
     $id_level = $_POST['id_level'];
@@ -16,10 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn->begin_transaction();
 
     try {
-        // Insertar el grupo
+        // Insertar grupo
         $stmt_grupo = $conn->prepare("INSERT INTO grupos (num, costo_hora, intensidad, id_idioma, id_libro, id_level, horas_tot, fecha_inicio, fecha_fin) 
                                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt_grupo->bind_param("idsiiisss", $num, $costo_hora, $intensidad, $id_idioma, $id_libro, $id_level, $horas_tot, $fecha_inicio, $fecha_fin);
+        $stmt_grupo->bind_param("sdsiiisss", $num, $costo_hora, $intensidad, $id_idioma, $id_libro, $id_level, $horas_tot, $fecha_inicio, $fecha_fin);
         $stmt_grupo->execute();
         $id_grupo = $conn->insert_id;
 
@@ -64,6 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $conn->close();
+
 ?>
 
 <!DOCTYPE html>
@@ -162,45 +193,57 @@ $conn->close();
             <!-- Intensidad -->
             <div class="mb-4">
                 <label for="intensidad" class="form-label required">Intensidad</label>
-                <select id="intensidad" name="intensidad" class="form-select" required>
-                    <option value="">Seleccione</option>
-                    <option value="Baja">Baja</option>
-                    <option value="Media">Media</option>
-                    <option value="Alta">Alta</option>
-                </select>
+                <input 
+                    type="text" 
+                    id="intensidad" 
+                    name="intensidad" 
+                    class="form-control" 
+                    placeholder="Escribe la intensidad (ejemplo: Alta, Media, Baja)" 
+                    required>
             </div>
+
 
             <!-- Idioma -->
             <div class="mb-4">
                 <label for="id_idioma" class="form-label required">Idioma</label>
                 <select id="id_idioma" name="id_idioma" class="form-select" required>
                     <option value="">Seleccione un idioma</option>
-                    <option value="1">Inglés</option>
-                    <option value="2">Francés</option>
-                    <option value="3">Alemán</option>
+                    <?php foreach ($idiomas as $idioma): ?>
+                        <option value="<?php echo $idioma['id_idioma']; ?>">
+                            <?php echo htmlspecialchars($idioma['nombre']); ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
+
 
             <!-- Libro -->
             <div class="mb-4">
                 <label for="id_libro" class="form-label required">Libro</label>
-                <select id="id_libro" name="id_libro" class="form-select" >
+                <select id="id_libro" name="id_libro" class="form-select" required>
                     <option value="">Seleccione un libro</option>
-                    <option value="1">English Starter</option>
-                    <option value="2">Intermediate Guide</option>
+                    <?php foreach ($libros as $libro): ?>
+                        <option value="<?php echo $libro['id_libro']; ?>">
+                            <?php echo htmlspecialchars($libro['nombre']); ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
+
 
             <!-- Nivel -->
             <div class="mb-4">
                 <label for="id_level" class="form-label required">Nivel</label>
-                <select id="id_level" name="id_level" class="form-select" >
+                <select id="id_level" name="id_level" class="form-select" required>
                     <option value="">Seleccione un nivel</option>
-                    <option value="1">A1 - Beginner</option>
-                    <option value="2">A2 - Elementary</option>
-                    <option value="3">B1 - Intermediate</option>
+                    <?php foreach ($niveles as $nivel): ?>
+                        <option value="<?php echo $nivel['id_level']; ?>">
+                            <?php echo htmlspecialchars($nivel['nombre']); ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
+
 
             <!-- Horas Totales -->
             <div class="mb-4">
