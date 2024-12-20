@@ -184,7 +184,7 @@ $conn->close();
             <!-- Libro -->
             <div class="mb-4">
                 <label for="id_libro" class="form-label required">Libro</label>
-                <select id="id_libro" name="id_libro" class="form-select" required>
+                <select id="id_libro" name="id_libro" class="form-select" >
                     <option value="">Seleccione un libro</option>
                     <option value="1">English Starter</option>
                     <option value="2">Intermediate Guide</option>
@@ -194,7 +194,7 @@ $conn->close();
             <!-- Nivel -->
             <div class="mb-4">
                 <label for="id_level" class="form-label required">Nivel</label>
-                <select id="id_level" name="id_level" class="form-select" required>
+                <select id="id_level" name="id_level" class="form-select" >
                     <option value="">Seleccione un nivel</option>
                     <option value="1">A1 - Beginner</option>
                     <option value="2">A2 - Elementary</option>
@@ -205,17 +205,17 @@ $conn->close();
             <!-- Horas Totales -->
             <div class="mb-4">
                 <label for="horas_tot" class="form-label required">Horas Totales</label>
-                <input type="number" id="horas_tot" name="horas_tot" class="form-control" placeholder="Ejemplo: 40" required>
+                <input type="number" id="horas_tot" name="horas_tot" class="form-control" placeholder="Ejemplo: 40" >
             </div>
 
             <!-- Fechas -->
             <div class="mb-4">
                 <label for="fecha_inicio" class="form-label required">Fecha de Inicio</label>
-                <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" >
             </div>
             <div class="mb-4">
                 <label for="fecha_fin" class="form-label required">Fecha de Fin</label>
-                <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required>
+                <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" >
             </div>
 
             <!-- Horarios -->

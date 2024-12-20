@@ -115,19 +115,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Correo Electrónico -->
             <div class="mb-4">
                 <label for="correo" class="form-label required">Correo Electrónico</label>
-                <input type="email" id="correo" name="correo" class="form-control" placeholder="Correo del maestro" required>
+                <input type="email" id="correo" name="correo" class="form-control" placeholder="Correo del maestro" >
             </div>
 
             <!-- Teléfono -->
             <div class="mb-4">
                 <label for="telefono" class="form-label required">Teléfono</label>
-                <input type="text" id="telefono" name="telefono" class="form-control" placeholder="Teléfono del maestro" required>
+                <input type="text" id="telefono" name="telefono" class="form-control" placeholder="Teléfono del maestro" >
             </div>
 
             <!-- Horas Totales -->
             <div class="mb-4">
                 <label for="horas_tot" class="form-label required">Horas Totales</label>
-                <input type="number" id="horas_tot" name="horas_tot" class="form-control" placeholder="Ejemplo: 40" required>
+                <input type="number" id="horas_tot" name="horas_tot" class="form-control" placeholder="Ejemplo: 40" >
             </div>
 
             <!-- Certificación -->

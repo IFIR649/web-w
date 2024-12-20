@@ -152,13 +152,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             <!-- Fecha de Inscripción -->
             <div class="mb-4">
                 <label for="fecha_inscripcion" class="form-label">Fecha de Inscripción</label>
-                <input type="date" id="fecha_inscripcion" name="fecha_inscripcion" class="form-control" value="<?php echo $estudiante['fecha_inscripcion']; ?>" required>
+                <input type="date" id="fecha_inscripcion" name="fecha_inscripcion" class="form-control" value="<?php echo $estudiante['fecha_inscripcion']; ?>" >
             </div>
 
             <!-- Número de Alumno -->
             <div class="mb-4">
                 <label for="num_alumno" class="form-label">Número de Alumno</label>
-                <input type="text" id="num_alumno" name="num_alumno" class="form-control" value="<?php echo $estudiante['num_alumno']; ?>" required>
+                <input type="text" id="num_alumno" name="num_alumno" class="form-control" value="<?php echo $estudiante['num_alumno']; ?>" >
             </div>
 
             <!-- Botones -->

@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="mb-4">
                 <label for="correo" class="form-label required">Correo Electrónico</label>
-                <input type="email" id="correo" name="correo" class="form-control" placeholder="Correo del alumno" required>
+                <input type="email" id="correo" name="correo" class="form-control" placeholder="Correo del alumno" >
             </div>
 
             <!-- Estado -->
@@ -135,13 +135,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Fecha de Inscripción -->
             <div class="mb-4">
                 <label for="fecha_inscripcion" class="form-label required">Fecha de Inscripción</label>
-                <input type="date" id="fecha_inscripcion" name="fecha_inscripcion" class="form-control" required>
+                <input type="date" id="fecha_inscripcion" name="fecha_inscripcion" class="form-control" >
             </div>
 
             <!-- Número de Alumno -->
             <div class="mb-4">
                 <label for="num_alumno" class="form-label required">Número de Alumno</label>
-                <input type="text" id="num_alumno" name="num_alumno" class="form-control" placeholder="Número único del alumno" required>
+                <input type="text" id="num_alumno" name="num_alumno" class="form-control" placeholder="Número único del alumno" >
             </div>
 
             <!-- Botones -->

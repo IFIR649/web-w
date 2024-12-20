@@ -15,6 +15,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $stmt->execute();
         $result = $stmt->get_result();
 
+        // Consultar los niveles disponibles
+        $queryLevels = "SELECT id_level, name FROM levels";
+        $resultLevels = $conn->query($queryLevels);
+        $levels = [];
+        if ($resultLevels->num_rows > 0) {
+            while ($row = $resultLevels->fetch_assoc()) {
+                $levels[] = $row;
+            }
+        }
+
+        $queryLibros = "SELECT id_libro, nombre FROM libro";
+        $resultLibros = $conn->query($queryLibros);
+        $libros = [];
+        if ($resultLibros->num_rows > 0) {
+            while ($row = $resultLibros->fetch_assoc()) {
+                $libros[] = $row;
+            }
+        }
+
+        // Consultar los idiomas disponibles
+        $queryIdiomas = "SELECT id_idioma, nombre FROM idioma";
+        $resultIdiomas = $conn->query($queryIdiomas);
+        $idiomas = [];
+        if ($resultIdiomas->num_rows > 0) {
+            while ($row = $resultIdiomas->fetch_assoc()) {
+                $idiomas[] = $row;
+            }
+        }
+
+
         // Verificar si se encontró el grupo
         if ($result->num_rows > 0) {
             $grupo = $result->fetch_assoc();
@@ -43,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $id_grupo = intval($_POST['id_grupo']);
     $num = intval($_POST['num']);
     $costo_hora = floatval($_POST['costo_hora']);
-    $intensidad = $_POST['intensidad'];
+    $intensidad = $conn->real_escape_string($_POST['intensidad']);
     $id_idioma = intval($_POST['id_idioma']);
     $id_libro = intval($_POST['id_libro']);
     $id_level = intval($_POST['id_level']);
@@ -184,47 +214,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             </div>
 
             <!-- Intensidad -->
-            <div class="mb-4">
-                <label for="intensidad" class="form-label required">Intensidad</label>
-                <select id="intensidad" name="intensidad" class="form-select" required>
-                    <option value="">Seleccione</option>
-                    <option value="Baja" <?php echo $grupo['intensidad'] == 'Baja' ? 'selected' : ''; ?>>Baja</option>
-                    <option value="Media" <?php echo $grupo['intensidad'] == 'Media' ? 'selected' : ''; ?>>Media</option>
-                    <option value="Alta" <?php echo $grupo['intensidad'] == 'Alta' ? 'selected' : ''; ?>>Alta</option>
-                </select>
+            <div class="mb-3">
+                <label for="intensidad" class="form-label">Intensidad</label>
+                <input 
+                    type="text" 
+                    id="intensidad" 
+                    name="intensidad" 
+                    class="form-control" 
+                    placeholder="Escribe la intensidad" 
+                    value="<?php echo isset($grupo['intensidad']) ? htmlspecialchars($grupo['intensidad']) : ''; ?>" 
+                    required>
             </div>
 
+
             <!-- Idioma -->
-            <div class="mb-4">
-                <label for="id_idioma" class="form-label required">Idioma</label>
-                <select id="id_idioma" name="id_idioma" class="form-select" required>
-                    <option value="">Seleccione un idioma</option>
-                    <option value="1" <?php echo $grupo['id_idioma'] == 1 ? 'selected' : ''; ?>>Inglés</option>
-                    <option value="2" <?php echo $grupo['id_idioma'] == 2 ? 'selected' : ''; ?>>Francés</option>
-                    <option value="3" <?php echo $grupo['id_idioma'] == 3 ? 'selected' : ''; ?>>Alemán</option>
+            <div class="mb-3">
+                <label for="id_idioma" class="form-label">Idioma</label>
+                <select id="id_idioma" name="id_idioma" class="form-control" required>
+                    <option value="" disabled selected>Seleccione un idioma</option>
+                    <?php foreach ($idiomas as $idioma): ?>
+                        <option value="<?php echo $idioma['id_idioma']; ?>" <?php echo ($grupo['id_idioma'] == $idioma['id_idioma']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($idioma['nombre']); ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
 
             <!-- Libro -->
-            <div class="mb-4">
-                <label for="id_libro" class="form-label required">Libro</label>
-                <select id="id_libro" name="id_libro" class="form-select" required>
-                    <option value="">Seleccione un libro</option>
-                    <option value="1" <?php echo $grupo['id_libro'] == 1 ? 'selected' : ''; ?>>English Starter</option>
-                    <option value="2" <?php echo $grupo['id_libro'] == 2 ? 'selected' : ''; ?>>Intermediate Guide</option>
+            <div class="mb-3">
+                <label for="id_libro" class="form-label">Libro</label>
+                <select id="id_libro" name="id_libro" class="form-control" required>
+                    <option value="" disabled selected>Seleccione un libro</option>
+                    <?php foreach ($libros as $libro): ?>
+                        <option value="<?php echo $libro['id_libro']; ?>" <?php echo ($grupo['id_libro'] == $libro['id_libro']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($libro['nombre']); ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
 
             <!-- Nivel -->
-            <div class="mb-4">
-                <label for="id_level" class="form-label required">Nivel</label>
-                <select id="id_level" name="id_level" class="form-select" required>
-                    <option value="">Seleccione un nivel</option>
-                    <option value="1" <?php echo $grupo['id_level'] == 1 ? 'selected' : ''; ?>>A1 - Beginner</option>
-                    <option value="2" <?php echo $grupo['id_level'] == 2 ? 'selected' : ''; ?>>A2 - Elementary</option>
-                    <option value="3" <?php echo $grupo['id_level'] == 3 ? 'selected' : ''; ?>>B1 - Intermediate</option>
-                </select>
-            </div>
+            <div class="mb-3">
+            <label for="id_level" class="form-label">Nivel</label>
+            <select id="id_level" name="id_level" class="form-control" required>
+                <option value="" disabled selected>Seleccione un nivel</option>
+                <?php foreach ($levels as $level): ?>
+                    <option value="<?php echo $level['id_level']; ?>" <?php echo ($grupo['id_level'] == $level['id_level']) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($level['name']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
 
             <!-- Horas Totales -->
             <div class="mb-4">

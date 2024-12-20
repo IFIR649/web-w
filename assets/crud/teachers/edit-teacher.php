@@ -133,19 +133,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             <!-- Correo Electrónico -->
             <div class="mb-4">
                 <label for="correo" class="form-label required">Correo Electrónico</label>
-                <input type="email" id="correo" name="correo" class="form-control" value="<?php echo $maestro['correo']; ?>" required>
+                <input type="email" id="correo" name="correo" class="form-control" value="<?php echo $maestro['correo']; ?>" >
             </div>
 
             <!-- Teléfono -->
             <div class="mb-4">
                 <label for="telefono" class="form-label required">Teléfono</label>
-                <input type="text" id="telefono" name="telefono" class="form-control" value="<?php echo $maestro['telefono']; ?>" required>
+                <input type="text" id="telefono" name="telefono" class="form-control" value="<?php echo $maestro['telefono']; ?>" >
             </div>
 
             <!-- Horas Totales -->
             <div class="mb-4">
                 <label for="horas_tot" class="form-label required">Horas Totales</label>
-                <input type="number" id="horas_tot" name="horas_tot" class="form-control" value="<?php echo $maestro['horas_tot']; ?>" required>
+                <input type="number" id="horas_tot" name="horas_tot" class="form-control" value="<?php echo $maestro['horas_tot']; ?>" >
             </div>
 
             <!-- Certificación -->
