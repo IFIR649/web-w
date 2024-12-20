@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Guardar
                 </button>
-                <a href="index.html" class="btn btn-secondary">
+                <a href="../../../libros.php" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Cancelar
                 </a>
             </div>

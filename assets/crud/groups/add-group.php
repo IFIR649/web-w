@@ -21,7 +21,7 @@ if ($resultLibros->num_rows > 0) {
 }
 
 // Consultar niveles
-$queryNiveles = "SELECT id_level, nombre FROM level";
+$queryNiveles = "SELECT id_level, name FROM level";
 $resultNiveles = $conn->query($queryNiveles);
 $niveles = [];
 if ($resultNiveles->num_rows > 0) {
@@ -180,8 +180,8 @@ $conn->close();
         <form id="addGroupForm" action="" method="POST">
             <!-- Número de Grupo -->
             <div class="mb-4">
-                <label for="num" class="form-label required">Número de Grupo</label>
-                <input type="number" id="num" name="num" class="form-control" placeholder="Ejemplo: 101" required>
+                <label for="num" class="form-label required">Nombre de Grupo</label>
+                <input type="text" id="num" name="num" class="form-control" placeholder="Ejemplo: 101" required>
             </div>
 
             <!-- Costo por Hora -->
@@ -238,7 +238,7 @@ $conn->close();
                     <option value="">Seleccione un nivel</option>
                     <?php foreach ($niveles as $nivel): ?>
                         <option value="<?php echo $nivel['id_level']; ?>">
-                            <?php echo htmlspecialchars($nivel['nombre']); ?>
+                            <?php echo htmlspecialchars($nivel['name']); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
