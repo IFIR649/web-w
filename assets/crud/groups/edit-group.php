@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $result = $stmt->get_result();
 
         // Consultar los niveles disponibles
-        $queryLevels = "SELECT id_level, name FROM levels";
+        $queryLevels = "SELECT id_level, name FROM level";
         $resultLevels = $conn->query($queryLevels);
         $levels = [];
         if ($resultLevels->num_rows > 0) {
@@ -203,8 +203,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
             <!-- Número de Grupo -->
             <div class="mb-4">
-                <label for="num" class="form-label required">Número de Grupo</label>
-                <input type="number" id="num" name="num" class="form-control" value="<?php echo htmlspecialchars($grupo['num']); ?>" required>
+                <label for="num" class="form-label required">Nombre de Grupo</label>
+                <input type="text" id="num" name="num" class="form-control" value="<?php echo htmlspecialchars($grupo['num']); ?>" required>
             </div>
 
             <!-- Costo por Hora -->

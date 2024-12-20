@@ -98,7 +98,6 @@
                                             <th>Número</th>
                                             <th>Intensidad</th>
                                             <th>Idioma</th>
-                                            <th>Nivel</th>
                                             <th>Fecha Inicio</th>
                                             <th>Fecha Fin</th>
                                             <th>Acciones</th>
@@ -111,10 +110,10 @@
 
                                         // Consulta para obtener la información de grupos
                                         $query = "SELECT g.id_grupo, g.num, g.intensidad, g.fecha_inicio, g.fecha_fin, 
-                                                         i.nombre AS idioma, le.name AS nivel
-                                                  FROM grupos g
-                                                  JOIN idioma i ON g.id_idioma = i.id_idioma
-                                                  JOIN level le ON g.id_level = le.id_level";
+                                                        i.nombre AS idioma
+                                                    FROM grupos g
+                                                    JOIN idioma i ON g.id_idioma = i.id_idioma;";
+
                                         $result = $conn->query($query);
 
                                         // Generar filas de la tabla
@@ -125,7 +124,6 @@
                                                     <td>{$row['num']}</td>
                                                     <td>{$row['intensidad']}</td>
                                                     <td>{$row['idioma']}</td>
-                                                    <td>{$row['nivel']}</td>
                                                     <td>{$row['fecha_inicio']}</td>
                                                     <td>{$row['fecha_fin']}</td>
                                                     <td>
